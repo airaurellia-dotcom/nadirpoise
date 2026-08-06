@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  /* ── Deep Navy core palette ── */
+  --color-bg-base: oklch(0.035 0.012 265);
+  --color-bg-surface: oklch(0.07 0.015 265);
+  --color-bg-elevated: oklch(0.11 0.018 265);
+  --color-bg-hover: oklch(0.15 0.02 265);
+
+  --color-text-primary: oklch(0.92 0.01 265);
+  --color-text-secondary: oklch(0.65 0.02 265);
+  --color-text-muted: oklch(0.42 0.02 265);
+
+  /* ── Accent colors (subdued for sophistication) ── */
+  --color-accent-green: oklch(0.7 0.15 150);
+  --color-accent-blue: oklch(0.55 0.14 260);
+  --color-accent-amber: oklch(0.7 0.13 80);
+  --color-accent-red: oklch(0.6 0.18 25);
+  --color-accent-teal: oklch(0.65 0.12 190);
+
+  /* ── Glass / Border system ── */
+  --color-glass-border: oklch(0.25 0.03 265 / 30%);
+  --color-glass-bg: oklch(0.1 0.015 265 / 60%);
+  --color-glass-shine: oklch(0.25 0.02 265 / 15%);
+
+  --color-border-subtle: oklch(0.16 0.015 265);
+  --color-border-mid: oklch(0.22 0.02 265);
+
+  /* ── Shift colors ── */
+  --color-shift-morning: oklch(0.55 0.14 260 / 15%);
+  --color-shift-morning-text: oklch(0.55 0.14 260);
+  --color-shift-afternoon: oklch(0.7 0.13 80 / 15%);
+  --color-shift-afternoon-text: oklch(0.7 0.13 80);
+  --color-shift-night: oklch(0.6 0.18 25 / 15%);
+  --color-shift-night-text: oklch(0.6 0.18 25);
+  --color-shift-off: oklch(0.42 0.02 265 / 10%);
+
+  /* ── Fatigue colors ── */
+  --color-fatigue-green: oklch(0.7 0.15 150);
+  --color-fatigue-amber: oklch(0.7 0.13 80);
+  --color-fatigue-red: oklch(0.6 0.18 25);
+
+  /* ── Role colors ── */
+  --color-role-senior: oklch(0.55 0.14 260);
+  --color-role-operator: oklch(0.7 0.15 150);
+  --color-role-lead: oklch(0.7 0.13 80);
+
+  /* ── Verdict colors ── */
+  --color-verd-approve: oklch(0.7 0.15 150);
+  --color-verd-approve-bg: oklch(0.7 0.15 150 / 12%);
+  --color-verd-caution: oklch(0.7 0.13 80);
+  --color-verd-caution-bg: oklch(0.7 0.13 80 / 12%);
+  --color-verd-reject: oklch(0.6 0.18 25);
+  --color-verd-reject-bg: oklch(0.6 0.18 25 / 12%);
+
+  /* ── Sizing ── */
+  --spacing-nav: 3.5rem;
+
+  /* ── Typography ── */
+  --text-xs: 0.688rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.5rem;
+
+  /* ── Liquid Glass effects ── */
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-pulse-glass: pulse-glass 4s ease-in-out infinite;
+  --animate-shimmer: shimmer 3s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse-glass {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes stag-walk {
+    0% { transform: translateX(-10px); opacity: 0.15; }
+    50% { transform: translateX(10px); opacity: 0.25; }
+    100% { transform: translateX(-10px); opacity: 0.15; }
+  }
+}
+
+/* ── Global styles ── */
+html {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* ── Dot-grid background with deep blue Aurora glow ── */
+.bg-dotgrid-glow {
+  background-color: var(--color-bg-base);
+  background-image:
+    radial-gradient(
+      ellipse 120% 80% at 50% 120%,
+      oklch(0.35 0.12 250 / 50%) 0%,
+      oklch(0.35 0.12 250 / 22%) 20%,
+      oklch(0.35 0.12 250 / 10%) 32%,
+      oklch(0.35 0.12 250 / 4%) 40%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 20% 10%,
+      oklch(0.4 0.1 220 / 20%) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 30% at 80% 15%,
+      oklch(0.35 0.08 200 / 15%) 0%,
+      transparent 60%
+    ),
+    radial-gradient(oklch(0.35 0.12 250 / 5%) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    24px 24px;
+  background-position: center, center, center, center;
+  background-attachment: fixed;
+}
+
+/* ── Liquid Glass card effect ── */
+.liquid-glass {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    oklch(0.15 0.02 265 / 70%) 0%,
+    oklch(0.1 0.015 265 / 50%) 50%,
+    oklch(0.12 0.018 265 / 60%) 100%
+  );
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s ease-out;
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(0.35 0.05 265 / 30%) 20%,
+    oklch(0.45 0.08 265 / 40%) 50%,
+    oklch(0.35 0.05 265 / 30%) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.liquid-glass:hover {
+  border-color: oklch(0.35 0.05 265 / 40%);
+  background: linear-gradient(
+    135deg,
+    oklch(0.17 0.02 265 / 75%) 0%,
+    oklch(0.12 0.018 265 / 55%) 50%,
+    oklch(0.14 0.02 265 / 65%) 100%
+  );
+  transform: translateY(-1px);
+}
+
+/* ── Stag watermark ── */
+.stag-watermark {
+  position: relative;
+  overflow: hidden;
+}
+
+.stag-watermark::after {
+  content: "";
+  position: fixed;
+  bottom: -40px;
+  right: -40px;
+  width: 280px;
+  height: 280px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L55 25 L70 15 L60 30 L78 28 L65 38 L80 45 L62 45 L72 55 L55 48 L55 60 L45 60 L45 48 L28 55 L38 45 L20 45 L35 38 L22 28 L40 30 L30 15 L45 25 Z' fill='oklch(0.6 0.1 250 / 12%)'/%3E%3Ccircle cx='48' cy='35' r='3' fill='oklch(0.6 0.1 250 / 18%)'/%3E%3Ccircle cx='52' cy='35' r='3' fill='oklch(0.6 0.1 250 / 18%)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+  animation: stag-walk 8s ease-in-out infinite;
+}
+
+/* ── Scrollbar styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-mid);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--color-accent-blue);
+  color: white;
+}
