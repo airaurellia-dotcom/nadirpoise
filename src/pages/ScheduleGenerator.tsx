@@ -179,21 +179,21 @@ export default function ScheduleGenerator() {
       <div className="stag-watermark animate-fade-in space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">Schedule Generator</h1>
-            <p className="text-sm text-text-secondary mt-1">
+            <h1 className="font-heading text-xl font-bold tracking-tight">Schedule Generator</h1>
+            <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
               Generate and manually adjust weekly shift rosters
             </p>
           </div>
           <button
             onClick={handleGenerate}
-            className="liquid-glass rounded-lg px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 active:scale-[0.97] hover:brightness-110"
+            className="btn-chrome rounded-sm px-4 py-2 text-sm font-medium"
           >
             Generate Schedule
           </button>
         </div>
-        <div className="liquid-glass flex items-center justify-center rounded-xl p-12">
+        <div className="liquid-glass flex items-center justify-center p-12">
           <div className="text-center">
-            <svg width="48" height="48" viewBox="0 0 100 100" className="mx-auto mb-3 text-accent-teal/40">
+            <svg width="48" height="48" viewBox="0 0 100 100" className="mx-auto mb-3 text-[#334155]/30">
               <path d="M50 8L56 28L72 18L62 34L80 32L66 42L84 50L64 50L74 62L54 52L54 72L46 72L46 52L26 62L36 50L16 50L34 42L20 32L38 34L28 18L44 28Z" fill="currentColor"/>
             </svg>
             <p className="text-sm text-text-muted">No schedule generated yet. Click "Generate Schedule" to start.</p>
@@ -208,8 +208,8 @@ export default function ScheduleGenerator() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Schedule Generator</h1>
-          <p className="text-sm text-text-secondary mt-1">
+          <h1 className="font-heading text-xl font-bold tracking-tight">Schedule Generator</h1>
+          <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
             Click any cell to toggle an employee — changes apply immediately.
           </p>
         </div>
@@ -217,19 +217,24 @@ export default function ScheduleGenerator() {
           {violations.length > 0 && (
             <button
               onClick={() => setShowViolationPanel(!showViolationPanel)}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150 active:scale-[0.97] ${
+              className={`rounded-sm border px-3 py-2 text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
                 showViolationPanel
-                  ? "bg-fatigue-red text-white"
-                  : "border border-fatigue-red/40 bg-fatigue-red/10 text-fatigue-red"
+                  ? "border-fatigue-red/40 bg-fatigue-red/10 text-fatigue-red"
+                  : "border-fatigue-red/30 bg-white text-fatigue-red shadow-[2px_2px_0px_0px_rgba(220,38,38,0.12)]"
               }`}
             >
-              ⚠ {violations.length} Violation{violations.length !== 1 ? "s" : ""}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="inline-block mr-1 -mt-0.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              {violations.length} Violation{violations.length !== 1 ? "s" : ""}
             </button>
           )}
-          {/* Run Stress Test button — always visible when schedule exists */}
+          {/* Run Stress Test button */}
           <button
             onClick={handleRunStressTest}
-            className="liquid-glass rounded-lg px-4 py-2 text-sm font-medium text-accent-teal transition-all duration-150 active:scale-[0.97] hover:brightness-110"
+            className="btn-chrome rounded-sm px-4 py-2 text-sm font-medium"
           >
             <span className="flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -240,7 +245,7 @@ export default function ScheduleGenerator() {
           </button>
           <button
             onClick={handleGenerate}
-            className="liquid-glass rounded-lg px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 active:scale-[0.97] hover:brightness-110"
+            className="btn-chrome rounded-sm px-4 py-2 text-sm font-medium"
           >
             Regenerate
           </button>
@@ -249,9 +254,9 @@ export default function ScheduleGenerator() {
 
       {/* Violation panel */}
       {showViolationPanel && (
-        <div className="rounded-xl border border-fatigue-red/30 bg-fatigue-red/5 p-4">
+        <div className="liquid-glass border-fatigue-red/20 p-4">
           <h3 className="text-sm font-semibold text-fatigue-red">Schedule Violations / Red Zone Flags</h3>
-          <div className="mt-3 space-y-1.5 max-h-48 overflow-y-auto">
+          <div className="mt-3 max-h-48 space-y-1.5 overflow-y-auto">
             {violations.map((v, idx) => (
               <div key={idx} className="flex items-center gap-2 text-xs text-text-primary">
                 <span className="shrink-0 font-medium text-text-secondary">{v.employeeName}</span>
@@ -259,9 +264,9 @@ export default function ScheduleGenerator() {
                 <span className="text-text-muted">{v.day}</span>
                 <span className="text-text-muted">·</span>
                 <span className="text-shift-night-text">{v.shift}</span>
-                <span className="text-fatigue-amber">⚠ {v.rule}</span>
+                <span className="text-fatigue-amber">{v.rule}</span>
                 {v.redZone && (
-                  <span className="rounded bg-fatigue-red/20 px-1.5 py-0.5 text-[10px] font-bold text-fatigue-red">
+                  <span className="stamp-badge border-fatigue-red/50 text-fatigue-red">
                     RED ZONE (FI: {v.fatigueIndex}%)
                   </span>
                 )}
@@ -272,7 +277,7 @@ export default function ScheduleGenerator() {
       )}
 
       {/* Light exposure calibration panel — NASA POWER */}
-      <div className="rounded-xl border border-glass-border bg-glass-bg/40 p-4 backdrop-blur-md">
+      <div className="liquid-glass p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h3 className="flex items-center gap-2 text-xs font-semibold text-text-primary">
@@ -288,7 +293,7 @@ export default function ScheduleGenerator() {
                 <path d="M19.07 4.93l-1.41 1.41" />
               </svg>
               Light Exposure Calibration
-              <span className="rounded border border-glass-border/60 px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wider text-text-muted">
+              <span className="stamp-badge border-chrome/40 text-chrome-dark">
                 NASA POWER
               </span>
             </h3>
@@ -299,33 +304,33 @@ export default function ScheduleGenerator() {
 
           {/* Status badge */}
           {solarLoading && (
-            <span className="flex items-center gap-1.5 rounded-lg border border-glass-border px-2.5 py-1 text-[10px] text-text-muted">
+            <span className="flex items-center gap-1.5 rounded-sm border border-[#334155]/20 bg-white px-2.5 py-1 text-[10px] text-text-muted shadow-[2px_2px_0px_0px_rgba(30,41,59,0.08)]">
               <span className="inline-block h-2.5 w-2.5 animate-spin rounded-full border border-text-muted border-t-transparent" />
               Fetching solar data…
             </span>
           )}
           {!solarLoading && solarError && (
-            <span className="rounded-lg border border-fatigue-amber/30 bg-fatigue-amber/10 px-2.5 py-1 text-[10px] text-fatigue-amber">
+            <span className="rounded-sm border border-fatigue-amber/30 bg-verd-caution-bg px-2.5 py-1 text-[10px] text-fatigue-amber">
               Offline — using default calibration
             </span>
           )}
           {!solarLoading && solarData && (
             <span className="stamp-badge border-accent-amber/40 text-accent-amber">
-              ☀ {solarData.averageRadiation.toFixed(1)} MJ/m² · NASA POWER
+              {solarData.averageRadiation.toFixed(1)} MJ/m² · NASA POWER
             </span>
           )}
         </div>
 
         {/* Calibrated recommendation */}
-        <div className="mt-3 rounded-lg border border-accent-amber/20 bg-accent-amber/5 p-3">
+        <div className="mt-3 rounded-sm border border-accent-amber/20 bg-[#FFFBEB] p-3">
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted">
                 Light Index
               </span>
-              <div className="h-1.5 w-24 overflow-hidden rounded-full bg-bg-hover">
+              <div className="h-1.5 w-24 overflow-hidden rounded-full bg-bg-elevated">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-accent-amber/40 to-accent-amber transition-all duration-500"
+                  className="h-full rounded-full bg-accent-amber transition-all duration-500"
                   style={{ width: `${solarData ? Math.round(solarData.lightExposureCalibration * 100) : 50}%` }}
                 />
               </div>
@@ -333,7 +338,7 @@ export default function ScheduleGenerator() {
                 {solarData ? Math.round(solarData.lightExposureCalibration * 100) : "—"}%
               </span>
             </div>
-            <p className="flex-1 min-w-[200px] text-[11px] text-text-secondary">
+            <p className="min-w-[200px] flex-1 text-[11px] text-text-secondary">
               {solarData
                 ? lightExposureDescription(solarData.lightExposureCalibration)
                 : solarError
@@ -350,11 +355,11 @@ export default function ScheduleGenerator() {
               const rad = day.solarRadiation;
               const pct = rad !== null ? Math.min(100, Math.round((rad / 25) * 100)) : 0;
               return (
-                <div key={day.date} className="rounded-lg border border-glass-border/50 bg-bg-surface/40 p-1.5 text-center">
-                  <p className="text-[9px] font-medium uppercase tracking-wide text-text-muted">
+                <div key={day.date} className="liquid-glass p-1.5 text-center">
+                  <p className="text-[9px] font-semibold uppercase tracking-wide text-text-muted">
                     {DAY_NAMES[i]?.slice(0, 3)}
                   </p>
-                  <div className="mx-auto mt-1 h-8 w-1.5 overflow-hidden rounded-full bg-bg-hover">
+                  <div className="mx-auto mt-1 h-8 w-1.5 overflow-hidden rounded-full bg-bg-elevated">
                     <div
                       className={`w-full rounded-full transition-all duration-500 ${
                         pct >= 60 ? "bg-accent-amber" : pct >= 30 ? "bg-accent-amber/50" : "bg-text-muted/40"
@@ -373,17 +378,17 @@ export default function ScheduleGenerator() {
       </div>
 
       {/* Schedule grid */}
-      <div ref={scheduleRef} className="overflow-x-auto rounded-xl border border-glass-border bg-glass-bg backdrop-blur-md">
+      <div className="overflow-x-auto rounded-sm border border-[#334155]/15 bg-white shadow-[4px_4px_0px_0px_rgba(30,41,59,0.12)]">
         <table className="w-full min-w-[600px] border-collapse text-left text-sm">
           <thead>
             <tr>
-              <th className="sticky left-0 z-10 border-b border-r border-glass-border bg-bg-surface/80 px-3 py-2 text-xs font-semibold text-text-secondary backdrop-blur-md">
+              <th className="sticky left-0 z-10 border-b border-r border-[#334155]/15 bg-bg-elevated px-3 py-2 text-xs font-semibold text-text-secondary">
                 Employee
               </th>
               {DAY_NAMES.map((day) => (
                 <th
                   key={day}
-                  className="border-b border-glass-border bg-bg-surface/80 px-2 py-2 text-center text-xs font-semibold text-text-secondary backdrop-blur-md"
+                  className="border-b border-[#334155]/15 bg-bg-elevated px-2 py-2 text-center text-xs font-semibold text-text-secondary"
                 >
                   <div>{day.slice(0, 3)}</div>
                 </th>
@@ -395,20 +400,20 @@ export default function ScheduleGenerator() {
               const empViolations = violationsByEmployee.get(emp.id) ?? [];
               const violationCount = empViolations.length;
               return (
-                <tr key={emp.id} className="group border-b border-glass-border last:border-0 hover:bg-bg-hover/20">
-                  <td className="sticky left-0 z-10 border-r border-glass-border bg-bg-surface/60 px-3 py-2 backdrop-blur-sm group-hover:bg-bg-hover/30">
+                <tr key={emp.id} className="group border-b border-[#334155]/10 last:border-0 hover:bg-bg-elevated/30">
+                  <td className="sticky left-0 z-10 border-r border-[#334155]/10 bg-white px-3 py-2 group-hover:bg-bg-elevated/20">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-text-primary">{emp.name}</span>
                       {violationCount > 0 && (
-                        <span className="shrink-0 rounded-full bg-fatigue-amber/20 px-1.5 text-[10px] font-bold text-fatigue-amber">
-                          {violationCount}
+                        <span className="stamp-badge shrink-0 border-fatigue-amber/40 text-fatigue-amber">
+                          {violationCount}V
                         </span>
                       )}
                     </div>
                     <div className="text-[10px] text-text-muted">{emp.role}</div>
                   </td>
                   {schedule.days.map((day, dayIdx) => (
-                    <td key={dayIdx} className="border-r border-glass-border p-1 last:border-r-0">
+                    <td key={dayIdx} className="border-r border-[#334155]/10 p-1 last:border-r-0">
                       <ShiftCell
                         day={day}
                         employeeId={emp.id}
@@ -427,23 +432,23 @@ export default function ScheduleGenerator() {
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted">
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-shift-morning" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-shift-morning" />
           Morning
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-shift-afternoon" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-shift-afternoon" />
           Afternoon
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-shift-night" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-shift-night" />
           Night
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded border border-glass-border bg-transparent" />
+          <span className="inline-block h-3 w-3 rounded-sm border border-[#334155]/20 bg-transparent" />
           Off
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-fatigue-red" />
+          <span className="inline-block h-2 w-4 rounded-sm bg-fatigue-red" />
           Red Zone (≥75% FI)
         </span>
       </div>
@@ -479,14 +484,14 @@ function ShiftCell({
   }
 
   const bgMap: Record<string, string> = {
-    Morning: "bg-shift-morning/20",
-    Afternoon: "bg-shift-afternoon/20",
-    Night: "bg-shift-night/20",
+    Morning: "bg-shift-morning",
+    Afternoon: "bg-shift-afternoon",
+    Night: "bg-shift-night",
   };
 
   return (
     <div
-      className={`relative flex h-16 w-full flex-col justify-center rounded-lg px-2 py-1 transition-all duration-150 ${bgMap[assignedShift] ?? ""} cursor-pointer hover:brightness-110 active:scale-[0.97]`}
+      className={`relative flex h-16 w-full cursor-pointer flex-col justify-center rounded-sm px-2 py-1 transition-all duration-150 ${bgMap[assignedShift] ?? ""} hover:brightness-95 active:scale-[0.97]`}
       onClick={() => onToggle(assignedShift)}
       title="Click to remove from this shift"
       role="button"
@@ -498,21 +503,21 @@ function ShiftCell({
       <span className="text-[11px] font-medium text-text-primary">{assignedShift}</span>
       {fatigueVal != null && (
         <div className="mt-0.5 flex items-center gap-1">
-          <div className="h-1 w-full max-w-[40px] overflow-hidden rounded-full bg-bg-hover">
+          <div className="h-1 w-full max-w-[40px] overflow-hidden rounded-full bg-bg-elevated">
             <div
               className={`h-full rounded-full ${fatigueBarClass(fatigueVal)}`}
               style={{ width: `${fatigueVal}%` }}
             />
           </div>
-          <span className={`text-[10px] font-mono ${fatigueVal >= 75 ? "text-fatigue-red" : "text-text-muted"}`}>
+          <span className={`font-mono text-[10px] ${fatigueVal >= 75 ? "text-fatigue-red" : "text-text-muted"}`}>
             {fatigueVal}
           </span>
         </div>
       )}
       {(isRedZone || hasViolations) && (
         <div className="mt-0.5 flex items-center gap-1">
-          {isRedZone && <span className="rounded bg-fatigue-red/20 px-1 text-[9px] font-bold text-fatigue-red">RZ</span>}
-          {hasViolations && <span className="text-[9px] text-fatigue-amber">⚠</span>}
+          {isRedZone && <span className="stamp-badge border-fatigue-red/40 text-fatigue-red">RZ</span>}
+          {hasViolations && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">!</span>}
         </div>
       )}
     </div>

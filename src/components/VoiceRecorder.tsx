@@ -15,7 +15,6 @@ export default function VoiceRecorder({ onTranscription, disabled }: VoiceRecord
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const [elapsed, setElapsed] = useState(0);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -45,7 +44,6 @@ export default function VoiceRecorder({ onTranscription, disabled }: VoiceRecord
       };
 
       mediaRecorder.onstop = async () => {
-        // Stop all tracks
         stream.getTracks().forEach((t) => t.stop());
 
         if (chunksRef.current.length === 0) return;
@@ -65,7 +63,7 @@ export default function VoiceRecorder({ onTranscription, disabled }: VoiceRecord
         setElapsed(0);
       };
 
-      mediaRecorder.start(250); // collect data every 250ms
+      mediaRecorder.start(250);
       setIsRecording(true);
 
       timerRef.current = setInterval(() => {
@@ -107,10 +105,10 @@ export default function VoiceRecorder({ onTranscription, disabled }: VoiceRecord
         disabled={disabled || isProcessing}
         className={`relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-150 active:scale-[0.92] ${
           isRecording
-            ? "bg-fatigue-red text-white shadow-lg shadow-fatigue-red/30 animate-pulse"
+            ? "bg-fatigue-red text-white shadow-[0_0_0_4px_rgba(220,38,38,0.2)] animate-pulse"
             : isProcessing
               ? "bg-accent-amber/20 text-accent-amber cursor-wait"
-              : "border border-glass-border bg-bg-surface/50 text-text-secondary hover:bg-bg-hover hover:text-text-primary"
+              : "border border-[#334155]/20 bg-white text-text-secondary hover:bg-bg-hover hover:text-text-primary shadow-[2px_2px_0px_0px_rgba(30,41,59,0.08)]"
         }`}
         title={isRecording ? "Stop recording" : "Record voice note"}
       >
@@ -128,14 +126,12 @@ export default function VoiceRecorder({ onTranscription, disabled }: VoiceRecord
         )}
       </button>
 
-      {/* Recording timer */}
       {isRecording && (
         <span className="font-mono text-[11px] text-fatigue-red animate-pulse">
           {formatTime(elapsed)}
         </span>
       )}
 
-      {/* Audio waveform animation during recording */}
       {isRecording && (
         <div className="flex items-center gap-[2px]">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -151,18 +147,16 @@ export default function VoiceRecorder({ onTranscription, disabled }: VoiceRecord
         </div>
       )}
 
-      {/* Processing indicator */}
       {isProcessing && (
         <span className="text-[10px] text-text-muted animate-pulse">Transcribing…</span>
       )}
 
-      {/* Error tooltip */}
       {error && (
         <span
-          className="text-[10px] text-fatigue-amber max-w-[200px] truncate cursor-help"
+          className="max-w-[200px] cursor-help truncate text-[10px] text-fatigue-amber"
           title={error}
         >
-          ⚠ {error}
+          {error}
         </span>
       )}
     </div>

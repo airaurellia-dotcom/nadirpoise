@@ -112,14 +112,14 @@ export default function Dashboard() {
     return (
       <div className="stag-watermark animate-fade-in space-y-6">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-text-secondary mt-1">
+          <h1 className="font-heading text-xl font-bold tracking-tight">Dashboard</h1>
+          <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
             Real-time fatigue metrics and employee status
           </p>
         </div>
-        <div className="liquid-glass flex items-center justify-center rounded-xl p-12">
+        <div className="liquid-glass flex items-center justify-center p-12">
           <div className="text-center">
-            <svg width="48" height="48" viewBox="0 0 100 100" className="mx-auto mb-3 text-accent-teal/40">
+            <svg width="48" height="48" viewBox="0 0 100 100" className="mx-auto mb-3 text-[#334155]/30">
               <path d="M50 8L56 28L72 18L62 34L80 32L66 42L84 50L64 50L74 62L54 52L54 72L46 72L46 52L26 62L36 50L16 50L34 42L20 32L38 34L28 18L44 28Z" fill="currentColor"/>
             </svg>
             <p className="text-sm text-text-muted">
@@ -136,18 +136,18 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-text-secondary mt-1">
-            Real-time fatigue metrics and employee status
+          <h1 className="font-heading text-xl font-bold tracking-tight">Dashboard</h1>
+          <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
+            Real-time fatigue metrics &amp; employee status
           </p>
         </div>
         {latestStressTest && (
-          <div className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
+          <div className={`rounded-sm border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] ${
             latestStressTest.overallVerdict === "APPROVE"
-              ? "bg-verd-approve-bg text-verd-approve"
+              ? "border-verd-approve/30 bg-verd-approve-bg text-verd-approve"
               : latestStressTest.overallVerdict === "CAUTION"
-                ? "bg-verd-caution-bg text-verd-caution"
-                : "bg-verd-reject-bg text-verd-reject"
+                ? "border-verd-caution/30 bg-verd-caution-bg text-verd-caution"
+                : "border-verd-reject/30 bg-verd-reject-bg text-verd-reject"
           }`}>
             Last Stress Test: {latestStressTest.overallVerdict}
           </div>
@@ -196,13 +196,13 @@ export default function Dashboard() {
           return (
             <div
               key={emp.id}
-              className="group liquid-glass rounded-xl p-4"
+              className="group liquid-glass p-4"
             >
               {/* Top row: avatar + name + role */}
               <div className="flex items-start gap-3">
                 <div
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
-                    ROLE_COLORS[emp.role] ?? "bg-bg-hover text-text-primary"
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm text-xs font-bold ${
+                    ROLE_COLORS[emp.role] ?? "bg-bg-elevated text-text-primary"
                   }`}
                 >
                   {emp.avatarInitials}
@@ -213,14 +213,13 @@ export default function Dashboard() {
                       {emp.name}
                     </span>
                     {isRedZone && (
-                      <span className="shrink-0 rounded bg-fatigue-red/20 px-1.5 py-0.5 text-[10px] font-semibold text-fatigue-red">
-                        RED
+                      <span className="stamp-badge shrink-0 border-fatigue-red/50 text-fatigue-red">
+                        RED ZONE
                       </span>
                     )}
                     {violations.length > 0 && (
-                      <span className="shrink-0 rounded bg-fatigue-amber/20 px-1.5 py-0.5 text-[10px] font-semibold text-fatigue-amber"
-                            title={violations.join(", ")}>
-                        ⚠
+                      <span className="stamp-badge shrink-0 border-verd-caution/50 text-verd-caution">
+                        {violations.length}V
                       </span>
                     )}
                   </div>
@@ -231,7 +230,7 @@ export default function Dashboard() {
               {/* Shift chip + consecutive nights */}
               <div className="mt-3 flex items-center gap-2">
                 <span
-                  className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${
+                  className={`rounded-sm px-2 py-0.5 text-[11px] font-medium ${
                     SHIFT_COLORS[todayShift] ?? ""
                   }`}
                 >
@@ -252,7 +251,7 @@ export default function Dashboard() {
                     {fatigueVal}
                   </span>
                 </div>
-                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-bg-hover">
+                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-bg-elevated">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${fatigueBarClass(fatigueVal)}`}
                     style={{ width: `${fatigueVal}%` }}
@@ -293,12 +292,12 @@ function SummaryCard({
   accent?: string;
 }) {
   return (
-    <div className="liquid-glass rounded-xl p-4">
-      <p className="text-[11px] text-text-muted">{label}</p>
+    <div className="liquid-glass p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted">{label}</p>
       <p className={`mt-1 font-mono text-xl font-semibold ${accent ?? "text-text-primary"}`}>
         {value}
       </p>
-      <p className="text-[10px] text-text-muted">{sub}</p>
+      <p className="mt-0.5 text-[10px] text-text-muted">{sub}</p>
     </div>
   );
 }

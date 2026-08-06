@@ -12,7 +12,7 @@ export default function BrightDataTicker() {
 
   useEffect(() => {
     refresh();
-    const interval = setInterval(refresh, 60000); // refresh every 60s
+    const interval = setInterval(refresh, 60000);
     return () => clearInterval(interval);
   }, [refresh]);
 
@@ -20,10 +20,10 @@ export default function BrightDataTicker() {
 
   return (
     <div
-      className={`ticker-ribbon relative flex items-center gap-3 rounded-lg border px-3 py-1.5 text-[11px] ${
+      className={`ticker-ribbon relative flex items-center gap-3 rounded-sm border px-3 py-1.5 text-[11px] ${
         context.isLive
-          ? "border-accent-amber/20 bg-accent-amber/5"
-          : "border-glass-border bg-glass-bg/40 backdrop-blur-md"
+          ? "border-accent-amber/20 bg-[#FFFBEB]"
+          : "border-[#334155]/15 bg-white shadow-[2px_2px_0px_0px_rgba(30,41,59,0.06)]"
       }`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -47,7 +47,7 @@ export default function BrightDataTicker() {
           style={{ animationDuration: "25s" }}
         >
           <span className="inline-block">
-            <span className="text-accent-amber font-semibold">⏺ {context.headline}</span>
+            <span className="font-semibold text-accent-amber">● {context.headline}</span>
             <span className="mx-4 text-text-muted">//</span>
             <span className="text-text-muted">{context.source}</span>
             <span className="mx-2 text-text-muted">·</span>
@@ -57,7 +57,7 @@ export default function BrightDataTicker() {
           </span>
           {/* Duplicate for seamless loop */}
           <span className="ml-8 inline-block">
-            <span className="text-accent-amber font-semibold">⏺ {context.headline}</span>
+            <span className="font-semibold text-accent-amber">● {context.headline}</span>
             <span className="mx-4 text-text-muted">//</span>
             <span className="text-text-muted">{context.source}</span>
             <span className="mx-2 text-text-muted">·</span>
@@ -70,7 +70,7 @@ export default function BrightDataTicker() {
 
       {/* Pause hint */}
       {isPaused && (
-        <span className="shrink-0 text-[9px] text-text-muted/40 italic">paused</span>
+        <span className="shrink-0 text-[9px] italic text-text-muted/40">paused</span>
       )}
     </div>
   );

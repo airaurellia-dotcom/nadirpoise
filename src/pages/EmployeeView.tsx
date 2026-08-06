@@ -102,12 +102,12 @@ export default function EmployeeView() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/")}
-            className="rounded-lg border border-glass-border px-3 py-1.5 text-xs text-text-secondary transition-all duration-150 hover:bg-bg-hover"
+            className="btn-chrome rounded-sm px-3 py-1.5 text-xs"
           >
             ← Back to Dashboard
           </button>
         </div>
-        <div className="liquid-glass flex items-center justify-center rounded-xl p-12">
+        <div className="liquid-glass flex items-center justify-center p-12">
           <p className="text-sm text-text-muted">Employee profile not found.</p>
         </div>
       </div>
@@ -120,31 +120,31 @@ export default function EmployeeView() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate("/")}
-          className="btn-chrome rounded-lg px-3 py-1.5 text-xs"
+          className="btn-chrome rounded-sm px-3 py-1.5 text-xs"
         >
           ← Dashboard
         </button>
       </div>
 
       {/* Profile Header — Museum Placard Style */}
-      <div className="paper-card relative overflow-hidden rounded-xl p-6">
+      <div className="paper-card relative overflow-hidden p-6">
         {/* Decorative stamp */}
-        <div className="stamp-badge absolute right-4 top-4 border-chrome/30 text-chrome/60">
+        <div className="stamp-badge absolute right-4 top-4 border-rose/40 text-rose">
           EMPLOYEE
         </div>
 
         <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-accent-teal/15 text-lg font-bold text-accent-teal">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm bg-bg-elevated text-lg font-bold text-text-secondary">
             <StagIcon size={40} variant="glyph" />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="font-heading text-2xl font-bold tracking-tight text-text-primary">
               {employee.name}
             </h1>
             <p className="mt-0.5 text-sm text-text-secondary">{employee.role}</p>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-text-muted">
               <span className="flex items-center gap-1">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent-teal/60" />
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose/60" />
                 {employee.id}
               </span>
               <span className="text-text-muted/40">|</span>
@@ -164,8 +164,8 @@ export default function EmployeeView() {
       {/* Fatigue Gauge + Quick Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Fatigue Gauge */}
-        <div className="paper-card col-span-1 rounded-xl p-5 sm:col-span-2">
-          <div className="flex items-center justify-between mb-4">
+        <div className="paper-card col-span-1 p-5 sm:col-span-2">
+          <div className="mb-4 flex items-center justify-between">
             <h2 className="font-heading text-sm font-semibold text-text-primary">Live Fatigue Index</h2>
             {isRedZone && (
               <span className="stamp-badge border-fatigue-red/50 text-fatigue-red">
@@ -180,7 +180,7 @@ export default function EmployeeView() {
               {/* Background ring */}
               <svg width="112" height="112" viewBox="0 0 112 112" className="absolute">
                 <circle cx="56" cy="56" r="48" fill="none"
-                  stroke="currentColor" className="text-bg-hover"
+                  stroke="currentColor" className="text-bg-elevated"
                   strokeWidth="8"
                 />
                 <circle cx="56" cy="56" r="48" fill="none"
@@ -246,18 +246,18 @@ export default function EmployeeView() {
 
         {/* Quick stats */}
         <div className="space-y-3">
-          <div className="paper-card rounded-xl p-4">
-            <p className="text-[10px] font-mono uppercase tracking-[0.08em] text-text-muted">Night Shifts</p>
+          <div className="paper-card p-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-text-muted">Night Shifts</p>
             <p className="mt-1 font-mono text-2xl font-semibold text-shift-night-text">{stats.nightShifts}</p>
             <p className="text-[10px] text-text-muted">this week</p>
           </div>
-          <div className="paper-card rounded-xl p-4">
-            <p className="text-[10px] font-mono uppercase tracking-[0.08em] text-text-muted">Work Days</p>
+          <div className="paper-card p-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-text-muted">Work Days</p>
             <p className="mt-1 font-mono text-2xl font-semibold text-text-primary">{stats.workDays}</p>
             <p className="text-[10px] text-text-muted">of 7</p>
           </div>
-          <div className="paper-card rounded-xl p-4">
-            <p className="text-[10px] font-mono uppercase tracking-[0.08em] text-text-muted">Max Consec Nights</p>
+          <div className="paper-card p-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-text-muted">Max Consec Nights</p>
             <p className={`mt-1 font-mono text-2xl font-semibold ${
               stats.consecutiveNights > 3 ? "text-fatigue-red" : "text-text-primary"
             }`}>{stats.consecutiveNights}</p>
@@ -267,7 +267,7 @@ export default function EmployeeView() {
       </div>
 
       {/* 7-Day Roster */}
-      <div className="paper-card rounded-xl p-5">
+      <div className="paper-card p-5">
         <h2 className="font-heading text-sm font-semibold text-text-primary mb-4">My 7-Day Roster</h2>
         <div className="grid grid-cols-7 gap-2">
           {schedule?.days.map((_day, idx) => {
@@ -280,25 +280,25 @@ export default function EmployeeView() {
             return (
               <div
                 key={idx}
-                className={`rounded-xl border p-3 text-center transition-all duration-150 ${
+                className={`rounded-sm border p-3 text-center transition-all duration-150 ${
                   isToday
-                    ? "border-accent-teal/40 bg-accent-teal/5"
-                    : "border-glass-border bg-glass-bg/40 backdrop-blur-sm"
+                    ? "border-rose/50 bg-rose/5 shadow-[2px_2px_0px_0px_rgba(232,180,184,0.2)]"
+                    : "border-[#334155]/10 bg-white shadow-[2px_2px_0px_0px_rgba(30,41,59,0.06)]"
                 }`}
               >
                 <p className={`text-[9px] font-semibold uppercase tracking-[0.08em] ${
-                  isToday ? "text-accent-teal" : "text-text-muted"
+                  isToday ? "text-rose" : "text-text-muted"
                 }`}>
                   {DAY_NAMES[idx].slice(0, 3)}
                 </p>
-                <div className={`mt-2 rounded-lg py-2 ${config.bg}/20`}>
+                <div className={`mt-2 rounded-sm py-2 ${config.bg}`}>
                   <p className={`text-xs font-semibold ${config.color}`}>
                     {config.label}
                   </p>
                 </div>
                 {fi !== undefined && (
                   <div className="mt-2">
-                    <div className="h-1 w-full overflow-hidden rounded-full bg-bg-hover">
+                    <div className="h-1 w-full overflow-hidden rounded-full bg-bg-elevated">
                       <div
                         className={`h-full rounded-full ${fatigueBarClass(fi)}`}
                         style={{ width: `${fi}%` }}
@@ -318,8 +318,8 @@ export default function EmployeeView() {
       </div>
 
       {/* Personalised Light & Recovery Guidance */}
-      <div className="paper-card rounded-xl p-5">
-        <div className="flex items-center gap-2 mb-4">
+      <div className="paper-card p-5">
+        <div className="mb-4 flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-amber">
             <circle cx="12" cy="12" r="4" />
             <path d="M12 2v2" />
@@ -334,10 +334,10 @@ export default function EmployeeView() {
           <h2 className="font-heading text-sm font-semibold text-text-primary">
             Light & Recovery Guidance
           </h2>
-          <span className="stamp-badge border-chrome/30 text-chrome/60">NASA POWER</span>
+          <span className="stamp-badge border-chrome/30 text-chrome-dark">NASA POWER</span>
         </div>
 
-        <p className="text-xs text-text-secondary mb-4">
+        <p className="mb-4 text-xs text-text-secondary">
           {solarDesc}
         </p>
 
@@ -356,7 +356,7 @@ export default function EmployeeView() {
               </svg>
             }
             accent="text-accent-amber"
-            bg="bg-accent-amber/5"
+            bg="bg-[#FFFBEB]"
             border="border-accent-amber/20"
           />
           <GuidanceCard
@@ -368,7 +368,7 @@ export default function EmployeeView() {
               </svg>
             }
             accent="text-accent-blue"
-            bg="bg-accent-blue/5"
+            bg="bg-[#EFF6FF]"
             border="border-accent-blue/20"
           />
           <GuidanceCard
@@ -383,14 +383,14 @@ export default function EmployeeView() {
               </svg>
             }
             accent="text-fatigue-red"
-            bg="bg-fatigue-red/5"
+            bg="bg-[#FEF2F2]"
             border="border-fatigue-red/20"
           />
         </div>
 
         {/* Recovery recommendations */}
-        <div className="mt-4 rounded-lg border border-glass-border bg-bg-surface/50 p-3">
-          <h3 className="text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted mb-2">
+        <div className="mt-4 rounded-sm border border-[#334155]/10 bg-bg-elevated/50 p-3">
+          <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted">
             Recovery Protocol
           </h3>
           <ul className="space-y-1.5">
@@ -413,11 +413,11 @@ export default function EmployeeView() {
               </li>
             )}
             <li className="flex items-start gap-2 text-[11px] text-text-secondary">
-              <span className="mt-0.5 shrink-0 text-accent-teal">⏺</span>
+              <span className="mt-0.5 shrink-0 text-rose">●</span>
               <span>Nadir window bright-light protocol active — follow pre-shift light exposure schedule</span>
             </li>
             <li className="flex items-start gap-2 text-[11px] text-text-secondary">
-              <span className="mt-0.5 shrink-0 text-accent-teal">⏺</span>
+              <span className="mt-0.5 shrink-0 text-rose">●</span>
               <span>Hydration & nutrition break recommended every 4h during Nadir window operations</span>
             </li>
           </ul>
@@ -457,8 +457,8 @@ function GuidanceCard({
   border: string;
 }) {
   return (
-    <div className={`rounded-xl border p-4 ${bg} ${border}`}>
-      <div className="flex items-center gap-2 mb-2">
+    <div className={`rounded-sm border p-4 ${bg} ${border} shadow-[2px_2px_0px_0px_rgba(30,41,59,0.06)]`}>
+      <div className="mb-2 flex items-center gap-2">
         <span className={accent}>{icon}</span>
         <span className={`text-[10px] font-semibold uppercase tracking-[0.06em] ${accent}`}>
           {period}

@@ -27,24 +27,18 @@ export default function Archive() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       entries = entries.filter((e) => {
-        // Search by label
         const labelMatch = e.label?.toLowerCase().includes(q);
-        // Search by date
         const dateMatch = new Date(e.timestamp)
           .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
           .toLowerCase()
           .includes(q);
-        // Search by verdict
         const verdictMatch = e.stressTestResult?.overallVerdict.toLowerCase().includes(q);
-        // Search by employee name (override entries)
         const employeeMatch =
           e.overrideDetails?.employeeIds?.some((id) => {
             const emp = employees.find((em) => em.id === id);
             return emp?.name.toLowerCase().includes(q);
           }) ?? false;
-        // Search by manager note
         const noteMatch = e.overrideDetails?.managerNote?.toLowerCase().includes(q);
-
         return labelMatch || dateMatch || verdictMatch || employeeMatch || noteMatch;
       });
     }
@@ -63,8 +57,8 @@ export default function Archive() {
     <div className="stag-watermark animate-fade-in space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Nadir Archive</h1>
-        <p className="text-sm text-text-secondary mt-1">
+        <h1 className="font-heading text-xl font-bold tracking-tight">Nadir Archive</h1>
+        <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
           Browse historical schedules, stress test results, override events, and operational records
         </p>
       </div>
@@ -91,17 +85,17 @@ export default function Archive() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by date, employee, label, or verdict..."
-            className="w-full rounded-lg border border-glass-border bg-glass-bg py-2 pl-9 pr-3 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-teal/40 backdrop-blur-md"
+            className="w-full rounded-sm border border-[#334155]/15 bg-white py-2 pl-9 pr-3 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-rose/40 shadow-[2px_2px_0px_0px_rgba(30,41,59,0.08)]"
           />
         </div>
-        <div className="flex gap-1 rounded-lg border border-glass-border bg-glass-bg p-0.5 backdrop-blur-md">
+        <div className="flex gap-1 rounded-sm border border-[#334155]/15 bg-white p-0.5 shadow-[2px_2px_0px_0px_rgba(30,41,59,0.08)]">
           {typeFilterOptions.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setTypeFilter(key)}
-              className={`rounded-md px-3 py-1.5 text-[11px] font-medium transition-all duration-150 ${
+              className={`rounded-sm px-3 py-1.5 text-[11px] font-medium transition-all duration-150 ${
                 typeFilter === key
-                  ? "bg-bg-elevated text-text-primary"
+                  ? "bg-bg-elevated text-text-primary shadow-[1px_1px_0px_0px_rgba(30,41,59,0.08)]"
                   : "text-text-muted hover:text-text-secondary"
               }`}
             >
@@ -113,7 +107,7 @@ export default function Archive() {
 
       {/* Empty state */}
       {filteredEntries.length === 0 && (
-        <div className="paper-card flex flex-col items-center justify-center rounded-xl p-12">
+        <div className="paper-card flex flex-col items-center justify-center p-12">
           <StagIcon size={56} variant="watermark" className="mb-4" />
           {archive.length === 0 ? (
             <>
@@ -122,11 +116,11 @@ export default function Archive() {
                 The Nadir Archive is empty. Generated schedules, stress test results, and manager overrides will appear here as museum placards.
               </p>
               <div className="mt-6 flex items-center gap-3 text-[10px] text-text-muted">
-                <span className="stamp-badge border-chrome/20 text-chrome/50">Generate</span>
-                <span className="text-chrome/40">→</span>
-                <span className="stamp-badge border-chrome/20 text-chrome/50">Stress Test</span>
-                <span className="text-chrome/40">→</span>
-                <span className="stamp-badge border-chrome/20 text-chrome/50">Archive</span>
+                <span className="stamp-badge border-chrome/40 text-chrome-dark">Generate</span>
+                <span className="text-chrome-dark">→</span>
+                <span className="stamp-badge border-chrome/40 text-chrome-dark">Stress Test</span>
+                <span className="text-chrome-dark">→</span>
+                <span className="stamp-badge border-chrome/40 text-chrome-dark">Archive</span>
               </div>
             </>
           ) : (
@@ -137,7 +131,7 @@ export default function Archive() {
               </p>
               <button
                 onClick={() => { setSearchQuery(""); setTypeFilter("all"); }}
-                className="btn-chrome mt-3 rounded-lg px-3 py-1.5 text-xs"
+                className="btn-chrome mt-3 rounded-sm px-3 py-1.5 text-xs"
               >
                 Clear filters
               </button>
@@ -193,52 +187,68 @@ function ArchiveCard({
   return (
     <button
       onClick={onSelect}
-      className={`paper-card w-full rounded-xl border text-left transition-all duration-150 ${
+      className={`paper-card w-full border text-left transition-all duration-150 ${
         isOverride
-          ? "border-verd-caution/25 hover:border-verd-caution/40"
-          : "border-glass-border hover:border-glass-border/70"
-      } ${isSelected ? "ring-1 ring-accent-teal/30" : ""}`}
+          ? "border-verd-caution/30 hover:border-verd-caution/50"
+          : "border-[#334155]/15 hover:border-[#334155]/25"
+      } ${isSelected ? "border-rose/40" : ""}`}
     >
       {/* Hairline top border accent */}
-      <div className={`h-[2px] w-full rounded-t-xl ${
+      <div className={`h-[2px] w-full rounded-t-sm ${
         isOverride
-          ? "bg-gradient-to-r from-verd-caution/50 via-accent-amber/30 to-transparent"
+          ? "bg-gradient-to-r from-verd-caution/60 via-accent-amber/30 to-transparent"
           : isStressTest
-            ? "bg-gradient-to-r from-verd-reject/30 via-accent-teal/20 to-transparent"
-            : "bg-gradient-to-r from-accent-teal/30 via-glass-shine to-transparent"
+            ? "bg-gradient-to-r from-verd-reject/40 via-accent-teal/20 to-transparent"
+            : "bg-gradient-to-r from-rose/40 via-chrome/40 to-transparent"
       }`} />
 
       <div className="p-4">
-        {/* Museum placard styling */}
         <div className="flex items-start gap-3">
-          {/* Accession number — hairline, small caps */}
+          {/* Accession number */}
           <div className="hidden shrink-0 flex-col items-center sm:flex">
             <span className="text-[9px] font-mono font-semibold uppercase tracking-[0.08em] text-text-muted/50">
               {accession}
             </span>
-            <div className="mt-1 h-8 w-px bg-glass-border" />
+            <div className="mt-1 h-8 w-px bg-[#334155]/15" />
           </div>
 
           {/* Type indicator */}
-          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm ${
+          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm text-sm ${
             isOverride
-              ? "bg-verd-caution-bg/30"
+              ? "bg-verd-caution-bg text-verd-caution"
               : isStressTest
-                ? "bg-verd-reject-bg/20"
-                : "bg-accent-blue/15"
+                ? "bg-verd-reject-bg text-verd-reject"
+                : "bg-[#EFF6FF] text-accent-blue"
           }`}>
-            {isOverride ? "⚡" : isStressTest ? "🧪" : "📋"}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {isOverride ? (
+                <>
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </>
+              ) : isStressTest ? (
+                <>
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </>
+              ) : (
+                <>
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </>
+              )}
+            </svg>
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-text-primary truncate">
+              <span className="truncate text-sm font-medium text-text-primary">
                 {isOverride
                   ? "Manager Override"
                   : entry.label ?? (entry.type === "stress_test" ? "Stress Test" : "Schedule")}
               </span>
               {isToday && (
-                <span className="shrink-0 rounded-full bg-accent-teal/15 px-2 py-0.5 text-[9px] font-semibold text-accent-teal">
+                <span className="stamp-badge shrink-0 border-accent-teal/40 text-accent-teal">
                   NEW
                 </span>
               )}
@@ -248,7 +258,7 @@ function ArchiveCard({
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] uppercase tracking-[0.06em] text-text-muted/70">
               <span>{date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
               <span>{date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}</span>
-              <span className="rounded border border-glass-border/50 px-1.5 py-[1px] text-[9px]">
+              <span className="stamp-badge border-chrome/30 text-chrome-dark">
                 {entry.type === "override" ? "OVERRIDE" : entry.type === "stress_test" ? "STRESS TEST" : "SCHEDULE"}
               </span>
             </div>
@@ -256,16 +266,16 @@ function ArchiveCard({
 
           {/* Verdict badge for stress tests */}
           {isStressTest && (
-            <div className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${
+            <div className={`rounded-sm border px-2.5 py-1 text-[10px] font-semibold ${
               VERDICT_STYLES[entry.stressTestResult!.overallVerdict].bg
-            } ${VERDICT_STYLES[entry.stressTestResult!.overallVerdict].text}`}>
+            } border-current/30 ${VERDICT_STYLES[entry.stressTestResult!.overallVerdict].text}`}>
               {entry.stressTestResult!.overallVerdict}
             </div>
           )}
 
           {/* Override badge */}
           {isOverride && (
-            <div className="rounded-lg bg-verd-caution-bg/20 px-2.5 py-1 text-[10px] font-semibold text-verd-caution">
+            <div className="stamp-badge border-verd-caution/40 text-verd-caution">
               OVERRIDDEN
             </div>
           )}
@@ -273,16 +283,16 @@ function ArchiveCard({
 
         {/* Quick preview for stress test */}
         {isStressTest && (
-          <div className="mt-3 flex items-center gap-2 border-t border-glass-border/40 pt-2 text-[10px] text-text-muted">
-            <span className="text-verd-approve">{entry.stressTestResult!.summary.approved} ✅</span>
-            <span className="text-verd-caution">{entry.stressTestResult!.summary.cautioned} ⚠️</span>
-            <span className="text-verd-reject">{entry.stressTestResult!.summary.rejected} 🔴</span>
+          <div className="mt-3 flex items-center gap-2 border-t border-[#334155]/10 pt-2 text-[10px] text-text-muted">
+            <span className="text-verd-approve">{entry.stressTestResult!.summary.approved} approved</span>
+            <span className="text-verd-caution">{entry.stressTestResult!.summary.cautioned} caution</span>
+            <span className="text-verd-reject">{entry.stressTestResult!.summary.rejected} reject</span>
           </div>
         )}
 
         {/* Override preview — affected employees + note snippet */}
         {isOverride && entry.overrideDetails && (
-          <div className="mt-3 space-y-2 border-t border-glass-border/40 pt-2">
+          <div className="mt-3 space-y-2 border-t border-[#334155]/10 pt-2">
             {/* Affected employees */}
             <div className="flex flex-wrap gap-1.5">
               {entry.overrideDetails.employeeIds.slice(0, 6).map((id) => {
@@ -290,7 +300,7 @@ function ArchiveCard({
                 return emp ? (
                   <span
                     key={id}
-                    className="rounded-md border border-glass-border/50 bg-bg-surface/50 px-2 py-0.5 text-[9px] font-medium text-text-secondary"
+                    className="rounded-sm border border-[#334155]/10 bg-bg-elevated/50 px-2 py-0.5 text-[9px] font-medium text-text-secondary"
                   >
                     {emp.name}
                   </span>
@@ -308,9 +318,9 @@ function ArchiveCard({
             </p>
             {/* Verdict summary */}
             <div className="flex items-center gap-2 text-[10px] text-text-muted">
-              <span className="text-verd-approve">{entry.overrideDetails.stressTestResult.summary.approved} ✅</span>
-              <span className="text-verd-caution">{entry.overrideDetails.stressTestResult.summary.cautioned} ⚠️</span>
-              <span className="text-verd-reject">{entry.overrideDetails.stressTestResult.summary.rejected} 🔴</span>
+              <span className="text-verd-approve">{entry.overrideDetails.stressTestResult.summary.approved} approved</span>
+              <span className="text-verd-caution">{entry.overrideDetails.stressTestResult.summary.cautioned} caution</span>
+              <span className="text-verd-reject">{entry.overrideDetails.stressTestResult.summary.rejected} reject</span>
             </div>
           </div>
         )}
@@ -333,15 +343,15 @@ function ArchiveDetail({
   const isOverride = entry.type === "override";
 
   return (
-    <div className="liquid-glass rounded-xl p-5 animate-slide-up">
+    <div className="liquid-glass p-5 animate-slide-up">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-text-primary">
           {isOverride ? "Manager Override Details" : entry.label ?? "Archive Entry"}
         </h3>
         <button
           onClick={onClose}
-          className="rounded-lg p-1.5 text-text-muted transition-colors hover:bg-bg-hover hover:text-text-primary"
+          className="rounded-sm p-1.5 text-text-muted transition-colors hover:bg-bg-hover hover:text-text-primary"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -351,7 +361,7 @@ function ArchiveDetail({
       </div>
 
       {/* Schedule info */}
-      <div className="mb-4 space-y-2 rounded-lg bg-bg-hover p-3">
+      <div className="mb-4 space-y-2 rounded-sm bg-bg-elevated p-3">
         <p className="text-[11px] text-text-muted">
           Week starting {new Date(entry.schedule.weekStart).toLocaleDateString()}
         </p>
@@ -362,11 +372,11 @@ function ArchiveDetail({
         </p>
       </div>
 
-      {/* Override-specific details — museum placard detail */}
+      {/* Override-specific details */}
       {isOverride && entry.overrideDetails && (
         <div className="mb-4 space-y-3">
           {/* Manager justification */}
-          <div className="rounded-lg border border-verd-caution/20 bg-verd-caution-bg/10 p-3">
+          <div className="rounded-sm border border-verd-caution/20 bg-verd-caution-bg/50 p-3">
             <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-verd-caution">
               Manager Justification
             </span>
@@ -376,7 +386,7 @@ function ArchiveDetail({
           </div>
 
           {/* Affected employees */}
-          <div className="rounded-lg border border-glass-border p-3">
+          <div className="rounded-sm border border-[#334155]/10 p-3">
             <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted">
               Affected Personnel
             </span>
@@ -386,7 +396,7 @@ function ArchiveDetail({
                 return emp ? (
                   <span
                     key={id}
-                    className="rounded-md border border-glass-border bg-bg-surface/50 px-2 py-0.5 text-[11px] text-text-secondary"
+                    className="rounded-sm border border-[#334155]/10 bg-bg-elevated/30 px-2 py-0.5 text-[11px] text-text-secondary"
                   >
                     {emp.name}
                   </span>
@@ -396,9 +406,9 @@ function ArchiveDetail({
           </div>
 
           {/* Mitigations recorded */}
-          <div className="rounded-lg border border-glass-border p-3">
+          <div className="rounded-sm border border-[#334155]/10 p-3">
             <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted">
-              Mitigations & Findings
+              Mitigations &amp; Findings
             </span>
             <ul className="mt-2 space-y-1">
               {entry.overrideDetails.mitigations.map((m, i) => (
@@ -417,8 +427,8 @@ function ArchiveDetail({
         <div className="space-y-3">
           <h4 className="text-xs font-semibold text-text-secondary">Stress Test Results</h4>
           {entry.stressTestResult.personaResults.map((pr) => (
-            <div key={pr.personaId} className="rounded-lg border border-glass-border p-3">
-              <div className="flex items-center gap-2 mb-2">
+            <div key={pr.personaId} className="rounded-sm border border-[#334155]/10 p-3">
+              <div className="mb-2 flex items-center gap-2">
                 <span>{pr.personaIcon}</span>
                 <span className="text-xs font-medium text-text-primary">{pr.personaName}</span>
                 <span className={`ml-auto text-[10px] font-semibold ${VERDICT_STYLES[pr.verdict].text}`}>
@@ -440,8 +450,8 @@ function ArchiveDetail({
         <div className="space-y-3">
           <h4 className="text-xs font-semibold text-text-secondary">Persona Verdicts at Time of Override</h4>
           {entry.overrideDetails.stressTestResult.personaResults.map((pr) => (
-            <div key={pr.personaId} className="rounded-lg border border-glass-border p-3">
-              <div className="flex items-center gap-2 mb-2">
+            <div key={pr.personaId} className="rounded-sm border border-[#334155]/10 p-3">
+              <div className="mb-2 flex items-center gap-2">
                 <span>{pr.personaIcon}</span>
                 <span className="text-xs font-medium text-text-primary">{pr.personaName}</span>
                 <span className={`ml-auto text-[10px] font-semibold ${VERDICT_STYLES[pr.verdict].text}`}>
