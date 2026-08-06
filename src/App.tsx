@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import ScheduleGenerator from "./pages/ScheduleGenerator";
 import StressTest from "./pages/StressTest";
 import Archive from "./pages/Archive";
+import EmployeeView from "./pages/EmployeeView";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/schedule" element={<ScheduleGenerator />} />
             <Route path="/stress-test" element={<StressTest />} />
+            <Route path="/employee" element={<EmployeeView />} />
             <Route path="/archive" element={<Archive />} />
           </Routes>
         </main>

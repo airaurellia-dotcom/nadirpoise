@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useAppState } from "../context/AppContext";
 import { runStressTest } from "../lib/stressTestSimulator";
 import type { PersonaVerdict, StressTestResult, StressTestPersonaResult } from "../types";
+import VoiceRecorder from "../components/VoiceRecorder";
 
 const VERDICT_CONFIG: Record<PersonaVerdict, { label: string; bg: string; text: string; icon: string }> = {
   APPROVE: {
@@ -317,14 +318,21 @@ export default function StressTest() {
                 ))}
             </div>
 
-            {/* Manager note */}
-            <textarea
-              value={managerNote}
-              onChange={(e) => setManagerNote(e.target.value)}
-              placeholder="Enter override justification (required)..."
-              className="w-full rounded-lg border border-glass-border bg-bg-surface px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-teal/40 resize-none"
-              rows={3}
-            />
+            {/* Manager note with voice input */}
+            <div className="relative">
+              <textarea
+                value={managerNote}
+                onChange={(e) => setManagerNote(e.target.value)}
+                placeholder="Enter override justification (required)..."
+                className="w-full rounded-lg border border-glass-border bg-bg-surface px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-teal/40 resize-none pr-10"
+                rows={3}
+              />
+              <div className="absolute bottom-2 right-2">
+                <VoiceRecorder
+                  onTranscription={(text) => setManagerNote((prev) => prev + text)}
+                />
+              </div>
+            </div>
 
             <div className="mt-4 flex items-center justify-end gap-2">
               <button

@@ -310,8 +310,8 @@ export default function ScheduleGenerator() {
             </span>
           )}
           {!solarLoading && solarData && (
-            <span className="rounded-lg border border-glass-border bg-bg-surface/50 px-2.5 py-1 text-[10px] font-mono text-text-secondary">
-              ☀ {solarData.averageRadiation.toFixed(1)} MJ/m²/day
+            <span className="stamp-badge border-accent-amber/40 text-accent-amber">
+              ☀ {solarData.averageRadiation.toFixed(1)} MJ/m² · NASA POWER
             </span>
           )}
         </div>

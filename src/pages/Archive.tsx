@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useAppState } from "../context/AppContext";
 import type { ArchiveEntry, ArchiveEntryType, PersonaVerdict } from "../types";
+import StagIcon from "../components/StagIcon";
 
 const VERDICT_STYLES: Record<PersonaVerdict, { bg: string; text: string }> = {
   APPROVE: { bg: "bg-verd-approve-bg", text: "text-verd-approve" },
@@ -112,50 +113,31 @@ export default function Archive() {
 
       {/* Empty state */}
       {filteredEntries.length === 0 && (
-        <div className="liquid-glass flex flex-col items-center justify-center rounded-xl p-12">
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 100 100"
-            className="mb-4 text-accent-teal/30"
-          >
-            <path
-              d="M50 8L56 28L72 18L62 34L80 32L66 42L84 50L64 50L74 62L54 52L54 72L46 72L46 52L26 62L36 50L16 50L34 42L20 32L38 34L28 18L44 28Z"
-              fill="currentColor"
-            />
-          </svg>
+        <div className="paper-card flex flex-col items-center justify-center rounded-xl p-12">
+          <StagIcon size={56} variant="watermark" className="mb-4" />
           {archive.length === 0 ? (
             <>
-              <h3 className="text-sm font-medium text-text-primary">No records yet</h3>
+              <h3 className="text-sm font-semibold text-text-primary">No records yet</h3>
               <p className="mt-1 max-w-xs text-center text-xs text-text-muted">
-                The archive is empty. Generated schedules, stress test results, and manager overrides will appear here automatically.
+                The Nadir Archive is empty. Generated schedules, stress test results, and manager overrides will appear here as museum placards.
               </p>
-              <div className="mt-4 flex items-center gap-3 text-xs text-text-muted">
-                <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-accent-teal/50" />
-                  Generate a schedule
-                </span>
-                <span className="text-text-muted">→</span>
-                <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-accent-teal/50" />
-                  Run a stress test
-                </span>
-                <span className="text-text-muted">→</span>
-                <span className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-accent-teal/50" />
-                  Archive it
-                </span>
+              <div className="mt-6 flex items-center gap-3 text-[10px] text-text-muted">
+                <span className="stamp-badge border-chrome/20 text-chrome/50">Generate</span>
+                <span className="text-chrome/40">→</span>
+                <span className="stamp-badge border-chrome/20 text-chrome/50">Stress Test</span>
+                <span className="text-chrome/40">→</span>
+                <span className="stamp-badge border-chrome/20 text-chrome/50">Archive</span>
               </div>
             </>
           ) : (
             <>
-              <h3 className="text-sm font-medium text-text-primary">No matching records</h3>
+              <h3 className="text-sm font-semibold text-text-primary">No matching records</h3>
               <p className="mt-1 text-xs text-text-muted">
                 Try a different search term or filter
               </p>
               <button
                 onClick={() => { setSearchQuery(""); setTypeFilter("all"); }}
-                className="mt-3 rounded-lg border border-glass-border px-3 py-1.5 text-xs text-text-secondary transition-all duration-150 hover:bg-bg-hover"
+                className="btn-chrome mt-3 rounded-lg px-3 py-1.5 text-xs"
               >
                 Clear filters
               </button>
@@ -211,10 +193,10 @@ function ArchiveCard({
   return (
     <button
       onClick={onSelect}
-      className={`w-full rounded-xl border text-left transition-all duration-150 ${
+      className={`paper-card w-full rounded-xl border text-left transition-all duration-150 ${
         isOverride
-          ? "border-verd-caution/25 bg-verd-caution-bg/10 hover:border-verd-caution/40"
-          : "border-glass-border bg-glass-bg/40 backdrop-blur-md hover:border-glass-border/70"
+          ? "border-verd-caution/25 hover:border-verd-caution/40"
+          : "border-glass-border hover:border-glass-border/70"
       } ${isSelected ? "ring-1 ring-accent-teal/30" : ""}`}
     >
       {/* Hairline top border accent */}

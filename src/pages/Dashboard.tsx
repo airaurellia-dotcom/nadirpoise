@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useAppState } from "../context/AppContext";
 import { calculateFatigueReports, fatigueBarClass, fatigueLabel } from "../lib/fatigue";
 import type { ShiftType } from "../types";
+import BrightDataTicker from "../components/BrightDataTicker";
 
 const ROLE_COLORS: Record<string, string> = {
   "Senior Operator": "bg-role-senior text-white",
@@ -152,6 +153,9 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Bright Data Operational Context Ticker */}
+      <BrightDataTicker />
 
       {/* Summary bar */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
