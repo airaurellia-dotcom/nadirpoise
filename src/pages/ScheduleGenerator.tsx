@@ -4,6 +4,7 @@ import { useAppState } from "../context/AppContext";
 import { type Schedule, type DayPlan, type ShiftType } from "../types";
 import { calculateFatigueReports, fatigueBarClass } from "../lib/fatigue";
 import { generateSchedule } from "../lib/schedule";
+import PrintDispatchManifest from "../components/PrintDispatchManifest";
 import {
   fetchSolarData,
   getDefaultDateRange,
@@ -243,6 +244,7 @@ export default function ScheduleGenerator() {
               Run Stress Test
             </span>
           </button>
+          <PrintDispatchManifest />
           <button
             onClick={handleGenerate}
             className="btn-chrome rounded-sm px-4 py-2 text-sm font-medium"

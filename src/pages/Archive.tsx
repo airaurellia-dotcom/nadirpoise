@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useAppState } from "../context/AppContext";
 import type { ArchiveEntry, ArchiveEntryType, PersonaVerdict } from "../types";
 import StagIcon from "../components/StagIcon";
+import { ArchiveDispatchButton } from "../components/PrintDispatchManifest";
 
 const VERDICT_STYLES: Record<PersonaVerdict, { bg: string; text: string }> = {
   APPROVE: { bg: "bg-verd-approve-bg", text: "text-verd-approve" },
@@ -290,6 +291,13 @@ function ArchiveCard({
           </div>
         )}
 
+        {/* Print Dispatch — visible on schedule entries */}
+        {!isStressTest && !isOverride && (
+          <div className="mt-3 flex items-center justify-end border-t border-[#334155]/10 pt-2">
+            <ArchiveDispatchButton schedule={entry.schedule} />
+          </div>
+        )}
+
         {/* Override preview — affected employees + note snippet */}
         {isOverride && entry.overrideDetails && (
           <div className="mt-3 space-y-2 border-t border-[#334155]/10 pt-2">
@@ -362,14 +370,19 @@ function ArchiveDetail({
 
       {/* Schedule info */}
       <div className="mb-4 space-y-2 rounded-sm bg-bg-elevated p-3">
-        <p className="text-[11px] text-text-muted">
-          Week starting {new Date(entry.schedule.weekStart).toLocaleDateString()}
-        </p>
-        <p className="text-[11px] text-text-muted">
-          {entry.schedule.days.length} days · {entry.schedule.days.reduce((sum, d) =>
-            sum + d.shifts.Morning.length + d.shifts.Afternoon.length + d.shifts.Night.length, 0
-          )} total shift assignments
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[11px] text-text-muted">
+              Week starting {new Date(entry.schedule.weekStart).toLocaleDateString()}
+            </p>
+            <p className="text-[11px] text-text-muted">
+              {entry.schedule.days.length} days · {entry.schedule.days.reduce((sum, d) =>
+                sum + d.shifts.Morning.length + d.shifts.Afternoon.length + d.shifts.Night.length, 0
+              )} total shift assignments
+            </p>
+          </div>
+          <ArchiveDispatchButton schedule={entry.schedule} />
+        </div>
       </div>
 
       {/* Override-specific details */}

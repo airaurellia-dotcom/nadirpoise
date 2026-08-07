@@ -5,6 +5,7 @@ import { calculateFatigueReports, fatigueBarClass, fatigueLabel } from "../lib/f
 import { fetchSolarData, getDefaultDateRange, lightExposureDescription } from "../lib/nasaPower";
 import type { ShiftType } from "../types";
 import StagIcon from "../components/StagIcon";
+import CircadianAlerts from "../components/CircadianAlerts";
 import { useState, useEffect } from "react";
 
 const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -316,6 +317,9 @@ export default function EmployeeView() {
           })}
         </div>
       </div>
+
+      {/* Circadian Notification Center */}
+      <CircadianAlerts />
 
       {/* Personalised Light & Recovery Guidance */}
       <div className="paper-card p-5">

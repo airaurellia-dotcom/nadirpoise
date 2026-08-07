@@ -3,6 +3,8 @@ import { useAppState } from "../context/AppContext";
 import { calculateFatigueReports, fatigueBarClass, fatigueLabel } from "../lib/fatigue";
 import type { ShiftType } from "../types";
 import BrightDataTicker from "../components/BrightDataTicker";
+import CircadianAlerts from "../components/CircadianAlerts";
+import { useState } from "react";
 
 const ROLE_COLORS: Record<string, string> = {
   "Senior Operator": "bg-role-senior text-white",
@@ -20,6 +22,7 @@ const SHIFT_COLORS: Record<string, string> = {
 export default function Dashboard() {
   const { state } = useAppState();
   const { employees, schedule, archive } = state;
+  const [showAlerts, setShowAlerts] = useState(false);
 
   // Calculate fatigue reports for the schedule
   const reports = useMemo(() => {
@@ -152,6 +155,24 @@ export default function Dashboard() {
             Last Stress Test: {latestStressTest.overallVerdict}
           </div>
         )}
+        {/* Circadian Alert Bell */}
+        <button
+          onClick={() => setShowAlerts(true)}
+          className="btn-chrome relative rounded-sm px-3 py-2 text-xs font-medium"
+          title="View Circadian Alerts"
+        >
+          <span className="flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z" />
+              <path d="M8 21h8" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+            Alerts
+            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-accent-amber text-[8px] font-bold text-white">
+              !
+            </span>
+          </span>
+        </button>
       </div>
 
       {/* Bright Data Operational Context Ticker */}
@@ -276,6 +297,44 @@ export default function Dashboard() {
           );
         })}
       </div>
+
+      {/* Circadian Alerts Modal */}
+      {showAlerts && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/10 backdrop-blur-sm"
+            onClick={() => setShowAlerts(false)}
+          />
+          {/* Modal */}
+          <div className="relative w-full max-w-md animate-slide-up">
+            <div className="paper-card p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-amber">
+                    <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z" />
+                    <path d="M8 21h8" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                  </svg>
+                  <h2 className="font-heading text-sm font-semibold text-text-primary">
+                    Circadian Notification Center
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setShowAlerts(false)}
+                  className="rounded-sm p-1 text-text-muted transition-colors hover:bg-bg-hover hover:text-text-primary"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <CircadianAlerts />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -328,3 +328,366 @@ body {
   background: var(--color-rose);
   color: #1E293B;
 }
+
+/* ═══════════════════════════════════════════
+   PRINT DISPATCH MANIFEST STYLES
+   ═══════════════════════════════════════════ */
+.print-only-dispatch {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 16mm 14mm 14mm 14mm;
+  }
+
+  /* Hide everything except the dispatch sheet */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-only-dispatch,
+  .print-only-dispatch * {
+    visibility: visible;
+    display: revert;
+  }
+
+  .print-only-dispatch {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 210mm;
+    padding: 0;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    color: #1E293B;
+    background: #FFFFFF;
+  }
+
+  /* ── Letterhead ── */
+  .dispatch-letterhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .dispatch-title {
+    font-family: "Playfair Display", "Georgia", serif;
+    font-size: 20pt;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    margin: 0;
+    color: #1E293B;
+  }
+
+  .dispatch-subtitle {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #475569;
+    margin: 2px 0 0 0;
+  }
+
+  .dispatch-stamp-box {
+    border: 1.5px solid #1E293B;
+    padding: 4px 8px;
+    transform: rotate(-2deg);
+  }
+
+  .dispatch-stamp-text {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #1E293B;
+  }
+
+  /* ── Metadata row ── */
+  .dispatch-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 4px;
+    border: 0.5px solid #475569;
+    padding: 4px 8px;
+    background: #F8F6F0;
+  }
+
+  .dispatch-meta-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .dispatch-meta-label {
+    font-size: 6pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94A3B8;
+  }
+
+  .dispatch-mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 7.5pt;
+    color: #1E293B;
+  }
+
+  /* ── Hairline divider ── */
+  .dispatch-hr {
+    border: none;
+    border-top: 0.5px solid #1E293B;
+    margin: 6px 0;
+    opacity: 0.3;
+  }
+
+  /* ── Roster Table ── */
+  .dispatch-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7pt;
+    margin-bottom: 4px;
+  }
+
+  .dispatch-th {
+    text-align: left;
+    padding: 4px 3px;
+    font-size: 6.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 0.5px solid #1E293B;
+    border-right: 0.5px solid rgba(30, 41, 59, 0.2);
+    color: #1E293B;
+  }
+
+  .dispatch-th-employee {
+    min-width: 130px;
+  }
+
+  .dispatch-th-notes {
+    min-width: 100px;
+  }
+
+  .dispatch-td {
+    padding: 2px 3px;
+    border-bottom: 0.5px solid rgba(30, 41, 59, 0.12);
+    border-right: 0.5px solid rgba(30, 41, 59, 0.12);
+    vertical-align: top;
+  }
+
+  .dispatch-td-employee {
+    min-width: 130px;
+  }
+
+  .dispatch-td-off {
+    text-align: center;
+    color: #94A3B8;
+    font-size: 6pt;
+  }
+
+  .dispatch-td-morning {
+    background: #DBEAFE;
+  }
+
+  .dispatch-td-afternoon {
+    background: #FEF3C7;
+  }
+
+  .dispatch-td-night {
+    background: #FEE2E2;
+  }
+
+  .dispatch-emp-name {
+    font-weight: 600;
+    font-size: 7pt;
+    color: #1E293B;
+  }
+
+  .dispatch-emp-role {
+    font-size: 6pt;
+    color: #475569;
+  }
+
+  .dispatch-shift-code {
+    font-weight: 700;
+    font-size: 8pt;
+    text-align: center;
+    color: #1E293B;
+  }
+
+  .dispatch-fi {
+    font-size: 6pt;
+    text-align: center;
+    margin-top: 1px;
+    color: #475569;
+  }
+
+  .dispatch-fi-red {
+    color: #DC2626;
+    font-weight: 700;
+  }
+
+  .dispatch-fi-amber {
+    color: #D97706;
+  }
+
+  .dispatch-rz-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #DC2626;
+    color: white;
+    font-size: 6pt;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: 1px;
+  }
+
+  .dispatch-td-notes {
+    font-size: 6pt;
+    color: #475569;
+  }
+
+  .dispatch-mitigation {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .dispatch-mitigation-item {
+    font-size: 5.5pt;
+    color: #475569;
+  }
+
+  .dispatch-violation-count {
+    display: inline-block;
+    margin-top: 2px;
+    font-size: 5.5pt;
+    color: #DC2626;
+    font-weight: 600;
+  }
+
+  /* ── Legend ── */
+  .dispatch-legend {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 6pt;
+    color: #475569;
+    margin-bottom: 6px;
+  }
+
+  .dispatch-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .dispatch-legend-swatch {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+  }
+
+  .dispatch-legend-green { background: #22C55E; }
+  .dispatch-legend-amber { background: #D97706; }
+  .dispatch-legend-red   { background: #DC2626; }
+
+  /* ── Supervisor Approval Line ── */
+  .dispatch-approval {
+    display: flex;
+    gap: 40px;
+    margin: 10px 0 16px 0;
+  }
+
+  .dispatch-approval-line {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dispatch-approval-label {
+    font-size: 6pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+  }
+
+  .dispatch-approval-underscore {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 10pt;
+    letter-spacing: 0.2em;
+    color: #1E293B;
+  }
+
+  /* ── Official Stamp — bottom right ── */
+  .dispatch-official-stamp {
+    position: fixed;
+    bottom: 28mm;
+    right: 18mm;
+    border: 2px solid #1E293B;
+    padding: 6px 10px;
+    transform: rotate(-4deg);
+    opacity: 0.85;
+  }
+
+  .dispatch-stamp-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .dispatch-stamp-line1 {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #1E293B;
+  }
+
+  .dispatch-stamp-line2 {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 9pt;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #DC2626;
+  }
+
+  .dispatch-stamp-line3 {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #1E293B;
+  }
+
+  /* ── Footer ── */
+  .dispatch-footer {
+    position: fixed;
+    bottom: 14mm;
+    left: 14mm;
+    right: 14mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 6pt;
+    color: #94A3B8;
+    border-top: 0.5px solid #94A3B8;
+    padding-top: 3mm;
+  }
+
+  /* Avoid page breaks inside rows */
+  .dispatch-table tr {
+    page-break-inside: avoid;
+  }
+}
