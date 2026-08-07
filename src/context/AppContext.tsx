@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
-import type { AppState, AppAction, Schedule, ArchiveEntry, StressTestResult } from "../types";
+import type { AppState, AppAction, Schedule, ArchiveEntry, StressTestResult, Persona } from "../types";
 import { employees as mockEmployees } from "../data/employees";
 
 const defaultConstraints = {
@@ -13,6 +13,7 @@ const initialState: AppState = {
   schedule: null,
   constraints: defaultConstraints,
   archive: [],
+  persona: "shift_manager",
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -69,6 +70,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
     }
     case "CLEAR_ARCHIVE":
       return { ...state, archive: [] };
+    case "SET_PERSONA":
+      return { ...state, persona: action.payload };
     default:
       return state;
   }
@@ -82,6 +85,7 @@ interface AppContextValue {
   addArchiveEntry: (entry: ArchiveEntry) => void;
   addStressTestResult: (schedule: Schedule, result: StressTestResult) => void;
   addOverrideEntry: (schedule: Schedule, result: StressTestResult, managerNote: string, employeeIds: string[]) => void;
+  setPersona: (persona: Persona) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -127,9 +131,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const setPersona = useCallback(
+    (persona: Persona) => dispatch({ type: "SET_PERSONA", payload: persona }),
+    [],
+  );
+
   return (
     <AppContext.Provider
-      value={{ state, dispatch, setSchedule, setCurrentSchedule, addArchiveEntry, addStressTestResult, addOverrideEntry }}
+      value={{ state, dispatch, setSchedule, setCurrentSchedule, addArchiveEntry, addStressTestResult, addOverrideEntry, setPersona }}
     >
       {children}
     </AppContext.Provider>

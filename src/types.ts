@@ -91,6 +91,16 @@ export interface ArchiveEntry {
   label?: string;
 }
 
+// ── Persona Switcher ──
+
+export type Persona = "shift_manager" | "employee" | "auditor";
+
+export const PERSONA_LABELS: Record<Persona, string> = {
+  shift_manager: "Shift Manager (NexaGlobal Air-Hub)",
+  employee: "Frontline Employee (Amir Hassan)",
+  auditor: "Safety Compliance Auditor",
+};
+
 // ── App State ──
 
 export type AppAction =
@@ -100,11 +110,13 @@ export type AppAction =
   | { type: "ADD_ARCHIVE_ENTRY"; payload: ArchiveEntry }
   | { type: "CLEAR_ARCHIVE" }
   | { type: "ADD_STRESS_TEST_RESULT"; payload: { schedule: Schedule; result: StressTestResult } }
-  | { type: "ADD_OVERRIDE_ENTRY"; payload: { schedule: Schedule; result: StressTestResult; managerNote: string; employeeIds: string[] } };
+  | { type: "ADD_OVERRIDE_ENTRY"; payload: { schedule: Schedule; result: StressTestResult; managerNote: string; employeeIds: string[] } }
+  | { type: "SET_PERSONA"; payload: Persona };
 
 export interface AppState {
   employees: Employee[];
   schedule: Schedule | null;
   constraints: AppConstraints;
   archive: ArchiveEntry[];
+  persona: Persona;
 }
