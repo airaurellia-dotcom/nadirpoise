@@ -186,6 +186,7 @@ export default function Dashboard() {
           </span>
         </button>
       </div>
+      </div>
 
       {/* Bright Data Operational Context Ticker */}
       <BrightDataTicker />
@@ -242,12 +243,21 @@ export default function Dashboard() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-sm font-medium text-text-primary">
+                    <button
+                      onClick={() => navigate(`/employee?id=${emp.id}`)}
+                      className="truncate text-left text-sm font-medium text-text-primary transition-colors hover:text-rose"
+                      title={`View ${emp.name}'s circadian profile`}
+                    >
                       {emp.name}
-                    </span>
+                    </button>
                     {isRedZone && (
                       <span className="stamp-badge shrink-0 border-fatigue-red/50 text-fatigue-red">
                         RED ZONE
+                      </span>
+                    )}
+                    {!isRedZone && alertEmployees.has(emp.id) && (
+                      <span className="stamp-badge shrink-0 border-fatigue-amber/40 text-fatigue-amber">
+                        ALERT
                       </span>
                     )}
                     {violations.length > 0 && (
