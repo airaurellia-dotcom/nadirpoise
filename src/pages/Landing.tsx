@@ -186,6 +186,14 @@ export default function Landing() {
           <StagIcon size={320} variant="watermark" className="text-chrome/20" />
         </div>
 
+        {/* Ambient brand watermark */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 flex select-none items-center justify-center"
+        >
+          <span className="hero-brand-watermark">NADIRPOISE</span>
+        </div>
+
         {/* Header Badge */}
         <span className="stamp-badge border-rose/40 text-rose mb-6">
           ICAO & EASA Compliance Engine — Proof-Carrying Circadian Safety
