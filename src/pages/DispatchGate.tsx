@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useAppState } from "../context/AppContext";
 import VoiceRecorder from "../components/VoiceRecorder";
-import { ShieldCheck, Mic, AlertTriangle, CheckCircle, XCircle, Headset } from "lucide-react";
+import { ShieldCheck, Mic, AlertTriangle, CheckCircle, XCircle, Headset, FileText } from "lucide-react";
 import type { PersonaVerdict } from "../types";
 
 type GateState = "OPEN" | "CONDITIONAL" | "BLOCKED" | "OVERRIDDEN";

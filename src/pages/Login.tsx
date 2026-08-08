@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, LogIn, User, ShieldCheck, ClipboardCheck } from "lucide-react";
 import { useAppState } from "../context/AppContext";
 import { DEMO_CREDENTIALS } from "../constants/config";
@@ -29,8 +29,11 @@ const PERSONA_BUTTONS: { persona: Persona; label: string; icon: React.ReactNode;
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAppState();
-  const [selectedPersona, setSelectedPersona] = useState<Persona>("shift_manager");
+  const preselected =
+    (location.state as { preselectedPersona?: Persona } | null)?.preselectedPersona ?? "shift_manager";
+  const [selectedPersona, setSelectedPersona] = useState<Persona>(preselected);
 
   const handleQuickLogin = useCallback(
     (persona: Persona) => {

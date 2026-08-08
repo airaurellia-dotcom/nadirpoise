@@ -1,6 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, ChevronDown, ShieldAlert, Sun, Mic, LayoutDashboard, Zap, ShieldCheck, Printer } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ArrowRight, ChevronDown, ShieldAlert, Sun, Mic, LayoutDashboard, Zap, ShieldCheck, Printer, User, LogIn, ClipboardCheck } from "lucide-react";
 import StagIcon from "../components/StagIcon";
+import { PERSONA_LABELS } from "../types";
+import type { Persona } from "../types";
+
+const PERSONA_LIST: Persona[] = ["shift_manager", "employee", "auditor"];
+
+const PERSONA_ICONS: Record<Persona, React.ReactNode> = {
+  shift_manager: <ShieldCheck size={14} />,
+  employee: <User size={14} />,
+  auditor: <ClipboardCheck size={14} />,
+};
 
 const WORKFLOW_STEPS = [
   {
@@ -31,13 +42,100 @@ const WORKFLOW_STEPS = [
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [dropdownOpen]);
 
   const scrollToWorkflow = () => {
     document.getElementById("workflow")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handlePersonaSelect = (p: Persona) => {
+    setDropdownOpen(false);
+    navigate("/login", { state: { preselectedPersona: p } });
+  };
+
   return (
     <div className="min-h-screen bg-bg-base">
+      {/* ── Floating Profile Switcher (top-right) ── */}
+      <div ref={dropdownRef} className="fixed right-4 top-4 z-50">
+        <button
+          onClick={() => setDropdownOpen((prev) => !prev)}
+          className="btn-chrome flex items-center gap-2 rounded-sm px-3 py-2 text-[11px] font-medium"
+          aria-haspopup="menu"
+          aria-expanded={dropdownOpen}
+        >
+          <span className="flex h-6 w-6 items-center justify-center rounded-sm bg-bg-elevated text-xs">
+            <User size={13} />
+          </span>
+          <span>Profile</span>
+          <ChevronDown
+            size={12}
+            className={`shrink-0 text-text-muted transition-transform duration-150 ${
+              dropdownOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {dropdownOpen && (
+          <div
+            role="menu"
+            className="absolute right-0 top-full mt-1.5 w-[280px] animate-fade-in rounded-sm border border-[#334155]/15 bg-white py-1 shadow-[4px_4px_0px_0px_rgba(30,41,59,0.12)]"
+          >
+            <p className="px-3 pb-1 pt-1.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-text-muted">
+              Select Perspective
+            </p>
+            {PERSONA_LIST.map((p) => (
+              <button
+                key={p}
+                role="menuitem"
+                onClick={() => handlePersonaSelect(p)}
+                className="flex w-full items-center gap-3 px-3 py-2 text-left text-xs transition-colors duration-150 hover:bg-bg-hover"
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-[#334155]/15 bg-white text-xs">
+                  {PERSONA_ICONS[p]}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-text-primary">{PERSONA_LABELS[p]}</p>
+                  <p className="text-[10px] text-text-muted">
+                    {p === "shift_manager"
+                      ? "Full operational access"
+                      : p === "employee"
+                        ? "Personal circadian view"
+                        : "Archive & compliance"}
+                  </p>
+                </div>
+              </button>
+            ))}
+            <div className="mt-1 border-t border-[#334155]/10 pt-1">
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setDropdownOpen(false);
+                  navigate("/login");
+                }}
+                className="flex w-full items-center gap-3 px-3 py-2 text-left text-xs text-text-secondary transition-colors duration-150 hover:bg-bg-hover hover:text-text-primary"
+              >
+                <LogIn size={14} />
+                <span className="font-medium">Log In / Sign In</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* ── Block 1: Hero ── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
         {/* Decorative stag watermark */}

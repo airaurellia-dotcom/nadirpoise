@@ -230,7 +230,8 @@ export default function Dashboard() {
           return (
             <div
               key={emp.id}
-              className="group liquid-glass p-4"
+              onClick={() => navigate(`/employee?id=${emp.id}`)}
+              className="group liquid-glass cursor-pointer p-4 transition-all duration-150 hover:shadow-[4px_4px_0px_0px_rgba(232,180,184,0.25)] active:scale-[0.98]"
             >
               {/* Top row: avatar + name + role */}
               <div className="flex items-start gap-3">
@@ -243,13 +244,9 @@ export default function Dashboard() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => navigate(`/employee?id=${emp.id}`)}
-                      className="truncate text-left text-sm font-medium text-text-primary transition-colors hover:text-rose"
-                      title={`View ${emp.name}'s circadian profile`}
-                    >
+                    <span className="truncate text-sm font-medium text-text-primary">
                       {emp.name}
-                    </button>
+                    </span>
                     {isRedZone && (
                       <span className="stamp-badge shrink-0 border-fatigue-red/50 text-fatigue-red">
                         RED ZONE
