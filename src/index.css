@@ -37,6 +37,12 @@
   --color-accent-red: #DC2626;
   --color-accent-teal: #0891B2;
 
+  /* ── Sage Green (Landing glass accents) ── */
+  --color-sage: #8A9B6E;
+  --color-sage-light: #E2EAD8;
+  --color-sage-dark: #6B7F52;
+  --color-sage-pale: #F0F5EA;
+
   /* ── Border system ── */
   --color-glass-border: #334155;
   --color-glass-bg: #FFFFFF;
@@ -803,4 +809,84 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background: var(--color-bg-elevated);
   color: var(--color-text-primary);
   box-shadow: 1px 1px 0px 0px rgba(30, 41, 59, 0.08);
+}
+
+/* ═══════════════════════════════════════════
+   LANDING PAGE — EDITORIAL GLASS ACCENTS
+   ═══════════════════════════════════════════ */
+
+/* Frosted sage glass card (Landing USP cards) */
+.glass-sage {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(226,234,216,0.35) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 8px 32px rgba(30, 41, 59, 0.06), 0 2px 8px rgba(138, 155, 110, 0.08);
+  border-radius: 0.5rem;
+  transition: all 0.25s ease-out;
+}
+.glass-sage:hover {
+  box-shadow: 0 12px 40px rgba(30, 41, 59, 0.10), 0 4px 12px rgba(138, 155, 110, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Warm cream grid pattern (Hero background) */
+.cream-grid {
+  background-color: var(--color-bg-base);
+  background-image:
+    radial-gradient(
+      ellipse 100% 70% at 50% 100%,
+      rgba(226, 234, 216, 0.25) 0%,
+      transparent 70%
+    ),
+    linear-gradient(
+      0deg,
+      transparent 0%,
+      rgba(30, 41, 59, 0.015) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(30, 41, 59, 0.015) 1px,
+      transparent 1px
+    );
+  background-size: 100% 100%, 36px 36px, 36px 36px;
+  background-attachment: fixed;
+}
+
+/* Hero mockup dashboard card */
+.hero-score-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 16px 48px rgba(30, 41, 59, 0.08), 0 4px 16px rgba(138, 155, 110, 0.06);
+  border-radius: 0.75rem;
+}
+
+/* Floating glass chip badge */
+.glass-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--color-text-secondary);
+  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.06);
+}
+
+/* Sage tinted section panel */
+.sage-section {
+  background: linear-gradient(180deg, var(--color-bg-base) 0%, var(--color-sage-pale) 50%, var(--color-bg-base) 100%);
 }

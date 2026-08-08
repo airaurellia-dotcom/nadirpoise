@@ -1,6 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { ArrowRight, ChevronDown, ShieldAlert, Sun, Mic, LayoutDashboard, Zap, ShieldCheck, Printer, User, LogIn, ClipboardCheck } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  ShieldAlert,
+  Sun,
+  Mic,
+  Smartphone,
+  ShieldCheck,
+  User,
+  ClipboardCheck,
+  LogIn,
+  LayoutDashboard,
+  Zap,
+  Printer,
+  Moon,
+  AlertTriangle,
+  Activity,
+  CheckCircle2,
+} from "lucide-react";
 import StagIcon from "../components/StagIcon";
 import { PERSONA_LABELS } from "../types";
 import type { Persona } from "../types";
@@ -18,25 +36,48 @@ const WORKFLOW_STEPS = [
     number: "1",
     label: "Scan Fleet Roster",
     icon: <LayoutDashboard size={20} />,
-    desc: "Review live fatigue metrics across all personnel",
+    desc: "Review live fatigue metrics across all personnel and identify red-zone crew members instantly.",
   },
   {
     number: "2",
     label: "Run 5-Persona AI Stress Test",
     icon: <Zap size={20} />,
-    desc: "Simulate operational scenarios and verify resilience",
+    desc: "Simulate operational scenarios across shift manager, employee, and auditor personas to verify resilience.",
   },
   {
     number: "3",
     label: "Voice Justification & Override",
     icon: <Mic size={20} />,
-    desc: "Manager records voice override via Speechmatics",
+    desc: "Manager records voice override via Speechmatics with mandatory two-step dispatch countersigns.",
   },
   {
     number: "4",
     label: "Print Dispatch Manifest",
     icon: <Printer size={20} />,
-    desc: "Signed, proof-carrying dispatch sheet for compliance",
+    desc: "Signed, proof-carrying dispatch sheet with NASA POWER receipts for full compliance and audit readiness.",
+  },
+];
+
+const USP_CARDS = [
+  {
+    icon: <ShieldAlert size={24} />,
+    title: "Real-Time Nadir Detection",
+    desc: "Biological risk engine that automatically pinpoints high-risk shift windows and halts unsafe dispatches before incidents happen.",
+  },
+  {
+    icon: <Sun size={24} />,
+    title: "NASA POWER Proof Receipts",
+    desc: "Live geographic solar irradiance & light calibration data creating 100% auditable, tamper-proof compliance evidence.",
+  },
+  {
+    icon: <Mic size={24} />,
+    title: "Speechmatics Voice Override",
+    desc: "Manager voice justification gate protected by mandatory two-step dispatch countersigns for human-in-the-loop control.",
+  },
+  {
+    icon: <Smartphone size={24} />,
+    title: "Safe Scheduling in Your Pocket",
+    desc: "Delivers personalized circadian recovery windows, light-exposure guides, and shift alerts directly to frontline workers' devices.",
   },
 ];
 
@@ -68,7 +109,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-base">
+    <div className="min-h-screen bg-bg-base font-sans">
       {/* ── Floating Profile Switcher (top-right) ── */}
       <div ref={dropdownRef} className="fixed right-4 top-4 z-50">
         <button
@@ -136,28 +177,31 @@ export default function Landing() {
         )}
       </div>
 
-      {/* ── Block 1: Hero ── */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
+      {/* ══════════════════════════════════════════
+          SECTION 1: HERO
+          ══════════════════════════════════════════ */}
+      <section className="cream-grid relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 pt-12">
         {/* Decorative stag watermark */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <StagIcon size={320} variant="watermark" className="text-chrome/20" />
         </div>
 
-        {/* Badge tag */}
+        {/* Header Badge */}
         <span className="stamp-badge border-rose/40 text-rose mb-6">
-          ICAO & EASA Compliance Engine
+          ICAO & EASA Compliance Engine — Proof-Carrying Circadian Safety
         </span>
 
         {/* Headline */}
-        <h1 className="font-heading text-4xl font-bold tracking-tight text-text-primary sm:text-5xl md:text-6xl text-center max-w-3xl leading-tight">
-          NadirPoise{" "}
+        <h1 className="font-heading text-4xl font-bold tracking-tight text-text-primary sm:text-5xl md:text-6xl text-center max-w-4xl leading-tight">
+          Smarter Scheduling.{" "}
           <span className="font-serif italic font-normal text-text-secondary">
-            — Proof-Carrying Circadian Safety Engine
-          </span>
+            Zero Hallucinations.
+          </span>{" "}
+          Confident Compliance.
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-4 max-w-2xl text-center text-sm text-text-secondary leading-relaxed sm:text-base">
+        <p className="mt-4 max-w-3xl text-center text-sm text-text-secondary leading-relaxed sm:text-base">
           Eliminating 24/7 workforce fatigue, microsleep risks, and AI hallucinations
           with verifiable NASA POWER solar data.
         </p>
@@ -175,85 +219,232 @@ export default function Landing() {
             onClick={scrollToWorkflow}
             className="flex items-center gap-2 rounded-sm px-6 py-3 text-sm font-medium text-text-secondary transition-all duration-150 hover:bg-bg-hover hover:text-text-primary active:scale-[0.97]"
           >
-            <span>3-Min Demo Workflow</span>
+            <span>Explore Demo Workflow</span>
             <ChevronDown size={14} />
           </button>
         </div>
-      </section>
 
-      {/* ── Block 2: Value Propositions ── */}
-      <section className="px-4 py-24">
-        <div className="mx-auto max-w-5xl">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {/* Card 1: The Problem */}
-            <div className="paper-card p-6">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-sm bg-verd-reject-bg text-verd-reject">
-                <ShieldAlert size={20} />
+        {/* ── Hero Visual: Fleet Fatigue Score Card ── */}
+        <div className="relative mt-16 w-full max-w-lg animate-slide-up">
+          {/* Floating glass chips */}
+          <div className="glass-chip absolute -left-3 -top-3 z-10 rotate-[-3deg] md:-left-6">
+            <Moon size={10} />
+            <span>02:00–05:00 NADIR LOCKED</span>
+          </div>
+          <div className="glass-chip absolute -bottom-2 -right-2 z-10 rotate-[2deg] md:-bottom-3 md:-right-4">
+            <CheckCircle2 size={10} className="text-accent-green" />
+            <span>EASA AUDIT READY</span>
+          </div>
+
+          {/* The mock score card */}
+          <div className="hero-score-card p-5 md:p-6">
+            {/* Header row */}
+            <div className="flex items-center justify-between border-b border-[#334155]/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Activity size={14} className="text-chrome-dark" />
+                <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-text-muted">
+                  NadirPoise · Fleet Fatigue Score
+                </span>
               </div>
-              <span className="stamp-badge border-verd-reject/40 text-verd-reject mb-2">PROBLEM</span>
-              <h3 className="font-heading text-lg font-bold text-text-primary">The Nadir Window Crisis</h3>
-              <p className="mt-2 text-xs text-text-secondary leading-relaxed">
-                High-stakes night shifts (02:00–05:00) cause cognitive drop-offs and
-                dispatch errors. Traditional fatigue management relies on self-reporting
-                — unreliable and non-auditable.
-              </p>
+              <span className="flex items-center gap-1.5 text-[10px] font-mono text-accent-green">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent-green" />
+                LIVE
+              </span>
             </div>
 
-            {/* Card 2: NASA POWER USP */}
-            <div className="paper-card p-6">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-sm bg-verd-approve-bg text-verd-approve">
-                <Sun size={20} />
+            {/* Score display */}
+            <div className="flex items-end gap-4 py-4">
+              <div className="flex flex-col">
+                <span className="font-heading text-5xl font-bold leading-none text-text-primary md:text-6xl">
+                  78%
+                </span>
+                <span className="mt-1 text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent-green">
+                  Safe / Compliant
+                </span>
               </div>
-              <span className="stamp-badge border-accent-amber/40 text-accent-amber mb-2">ZERO HALLUCINATION</span>
-              <h3 className="font-heading text-lg font-bold text-text-primary">NASA POWER Proof Receipts</h3>
-              <p className="mt-2 text-xs text-text-secondary leading-relaxed">
-                Live geographic solar irradiance &amp; light calibration with 100%
-                auditable evidence logs. No AI guesswork — verifiable satellite data.
-              </p>
+              {/* Mini gauge bars */}
+              <div className="flex flex-1 flex-col gap-1.5 pb-2">
+                <div className="h-1.5 w-full rounded-full bg-bg-elevated">
+                  <div className="h-full w-[78%] rounded-full bg-accent-green transition-all" />
+                </div>
+                <div className="flex justify-between text-[9px] font-mono text-text-muted">
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
+                </div>
+              </div>
             </div>
 
-            {/* Card 3: Voice Override */}
-            <div className="paper-card p-6">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-sm bg-[#EFF6FF] text-accent-blue">
-                <Mic size={20} />
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-3 border-t border-[#334155]/10 pt-3">
+              <div className="text-center">
+                <span className="block text-[11px] font-mono font-bold text-text-primary">12</span>
+                <span className="block text-[9px] font-mono text-text-muted">CREW ACTIVE</span>
               </div>
-              <span className="stamp-badge border-accent-blue/40 text-accent-blue mb-2">HUMAN-IN-THE-LOOP</span>
-              <h3 className="font-heading text-lg font-bold text-text-primary">Speechmatics Voice Override</h3>
-              <p className="mt-2 text-xs text-text-secondary leading-relaxed">
-                Manager voice justifications with mandatory two-step dispatch
-                countersigns. Every override is archived with a verified transcript.
-              </p>
+              <div className="text-center">
+                <span className="block text-[11px] font-mono font-bold text-accent-green">0</span>
+                <span className="block text-[9px] font-mono text-text-muted">RED-ZONE</span>
+              </div>
+              <div className="text-center">
+                <span className="flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-accent-green">
+                  <CheckCircle2 size={10} />
+                  VERIFIED
+                </span>
+                <span className="block text-[9px] font-mono text-text-muted">NASA POWER</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Block 3: Workflow Preview ── */}
-      <section id="workflow" className="px-4 pb-24">
-        <div className="mx-auto max-w-4xl text-center">
-          <span className="stamp-badge border-chrome/40 text-chrome-dark mb-4">WORKFLOW</span>
-          <h2 className="font-heading text-2xl font-bold text-text-primary">
-            3-Min Demo Workflow
+      {/* ══════════════════════════════════════════
+          SECTION 2: THE PROBLEM (THE NADIR WINDOW CRISIS)
+          ══════════════════════════════════════════ */}
+      <section className="sage-section px-4 py-24 md:py-32">
+        <div className="mx-auto max-w-5xl">
+          {/* Section label */}
+          <span className="stamp-badge border-rose/40 text-rose mb-4 block w-fit">THE PROBLEM</span>
+
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-text-primary md:text-4xl max-w-2xl">
+            High-Stakes Night Shifts Are Broken by Fatigue
           </h2>
-          <p className="mt-2 text-sm text-text-secondary">
-            From roster scan to signed dispatch manifest — in four steps.
+
+          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+            {/* Card A: The Human Toll */}
+            <div className="paper-card p-6 md:p-7">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-sm bg-verd-reject-bg text-verd-reject">
+                <Moon size={22} />
+              </div>
+              <span className="stamp-badge border-verd-reject/40 text-verd-reject mb-2 block w-fit">
+                THE HUMAN TOLL
+              </span>
+              <h3 className="font-heading text-xl font-bold text-text-primary">
+                The 02:00–05:00 AM Nadir Window
+              </h3>
+              <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+                Biological circadian dips drop cognitive performance by up to 40%, creating
+                critical microsleep hazards during high-stakes logistics operations. The
+                human body's nadir window turns experienced crew into liability risks — with
+                reaction times comparable to 0.08% BAC impairment.
+              </p>
+              {/* Impact highlight */}
+              <div className="mt-4 rounded-sm border border-verd-reject/20 bg-verd-reject-bg/40 px-3 py-2">
+                <span className="text-[11px] font-mono font-semibold text-verd-reject">
+                  ↓ 40% COGNITIVE PERFORMANCE
+                </span>
+              </div>
+            </div>
+
+            {/* Card B: The Compliance Gap */}
+            <div className="paper-card p-6 md:p-7">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-sm bg-verd-caution-bg text-verd-caution">
+                <AlertTriangle size={22} />
+              </div>
+              <span className="stamp-badge border-verd-caution/40 text-verd-caution mb-2 block w-fit">
+                THE COMPLIANCE GAP
+              </span>
+              <h3 className="font-heading text-xl font-bold text-text-primary">
+                Unverifiable Schedules &amp; AI Hallucinations
+              </h3>
+              <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+                Standard scheduling algorithms ignore live solar exposure and biological
+                recovery, leaving operations vulnerable to audit failures and safety
+                breaches. Black-box AI fatigue models generate plausible-looking but
+                unverifiable risk scores — impossible to defend in ICAO or EASA audits.
+              </p>
+              {/* Impact highlight */}
+              <div className="mt-4 rounded-sm border border-verd-caution/20 bg-verd-caution-bg/40 px-3 py-2">
+                <span className="text-[11px] font-mono font-semibold text-verd-caution">
+                  <AlertTriangle size={11} className="inline-block mr-1 -mt-0.5" />
+                  ZERO AUDIT TRAIL
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          SECTION 3: THE SOLVING USPs (4 CORE VALUE PROPOSITIONS)
+          ══════════════════════════════════════════ */}
+      <section className="bg-bg-base px-4 py-24 md:py-32">
+        <div className="mx-auto max-w-5xl">
+          {/* Section label */}
+          <span className="stamp-badge border-chrome-dark/40 text-chrome-dark mb-4 block w-fit">
+            THE SOLUTION
+          </span>
+
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-text-primary md:text-4xl max-w-2xl">
+            Four Pillars of Circadian Safety
+          </h2>
+          <p className="mt-3 max-w-lg text-sm text-text-secondary">
+            From detection to documentation — every layer is designed for verifiable, human-in-the-loop compliance.
+          </p>
+
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {USP_CARDS.map((usp, idx) => (
+              <div key={idx} className="glass-sage group p-6 md:p-7">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-white/60 text-sage-dark shadow-sm transition-transform duration-200 group-hover:scale-105">
+                  {usp.icon}
+                </div>
+                <h3 className="font-heading text-lg font-bold text-text-primary">
+                  {usp.title}
+                </h3>
+                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                  {usp.desc}
+                </p>
+                {/* Decorative hairline */}
+                <div className="mt-4 h-px bg-gradient-to-r from-sage-light/60 to-transparent" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          SECTION 4: INTERACTIVE 4-STEP WORKFLOW PREVIEW
+          ══════════════════════════════════════════ */}
+      <section id="workflow" className="sage-section px-4 py-24 md:py-32">
+        <div className="mx-auto max-w-5xl text-center">
+          {/* Section label */}
+          <span className="stamp-badge border-rose/40 text-rose mb-4">WORKFLOW</span>
+
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-text-primary md:text-4xl">
+            Interactive 4-Step Workflow Preview
+          </h2>
+          <p className="mt-3 max-w-xl mx-auto text-sm text-text-secondary">
+            From roster scan to signed dispatch manifest — in four verifiable steps.
+            Click any step to explore the demo workflow.
           </p>
 
           {/* Flow diagram */}
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {WORKFLOW_STEPS.map((step, idx) => (
-              <div key={step.number} className="relative">
-                <div className="liquid-glass flex flex-col items-center p-6 text-center">
-                  <div className="stamp-badge border-rose/40 text-rose mb-3">{step.number}</div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-bg-elevated text-text-secondary">
+              <div key={step.number} className="relative group">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="glass-sage flex w-full flex-col items-center p-6 text-center cursor-pointer transition-all duration-200"
+                >
+                  {/* Number ring */}
+                  <div className="stamp-badge border-sage/40 text-sage mb-3">{step.number}</div>
+
+                  {/* Icon */}
+                  <div className="flex h-13 w-13 items-center justify-center rounded-sm bg-white/60 text-sage-dark shadow-sm transition-transform duration-200 group-hover:scale-110 group-hover:text-sage">
                     {step.icon}
                   </div>
-                  <h3 className="mt-3 text-sm font-semibold text-text-primary">{step.label}</h3>
-                  <p className="mt-1 text-[11px] text-text-muted">{step.desc}</p>
-                </div>
+
+                  <h3 className="mt-4 text-sm font-semibold text-text-primary">{step.label}</h3>
+                  <p className="mt-1.5 text-xs text-text-muted leading-relaxed">{step.desc}</p>
+
+                  {/* Arrow indicator */}
+                  <span className="mt-3 flex items-center gap-1 text-[10px] font-mono font-medium uppercase tracking-[0.08em] text-sage opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    Click to explore <ArrowRight size={10} />
+                  </span>
+                </button>
+
                 {/* Arrow connector (desktop) */}
                 {idx < WORKFLOW_STEPS.length - 1 && (
-                  <div className="absolute -right-3 top-1/2 hidden -translate-y-1/2 text-chrome-dark/40 lg:block">
+                  <div className="absolute -right-3 top-1/2 hidden -translate-y-1/2 text-sage-dark/25 lg:block">
                     <ArrowRight size={20} />
                   </div>
                 )}
@@ -264,15 +455,15 @@ export default function Landing() {
           {/* Bottom CTA */}
           <button
             onClick={() => navigate("/login")}
-            className="btn-chrome mt-10 inline-flex items-center gap-2 rounded-sm px-8 py-3 text-sm font-medium"
+            className="btn-chrome mt-12 inline-flex items-center gap-2 rounded-sm px-8 py-3 text-sm font-medium"
           >
-            <span>Get Started</span>
+            <span>Launch Operations Portal</span>
             <ArrowRight size={14} />
           </button>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       <footer className="border-t border-[#334155]/15 px-4 py-6">
         <div className="mx-auto flex max-w-5xl items-center justify-between text-[10px] font-mono text-text-muted/50">
           <span>NADIRPOISE v2.0 · ICAO &amp; EASA COMPLIANCE</span>

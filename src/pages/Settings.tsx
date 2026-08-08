@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppState } from "../context/AppContext";
 import { SUPABASE_URL, NASA_POWER_ENDPOINT, SPEECHMATICS_SECRET_NAME } from "../constants/config";
-import { Sun, Database, Key, ShieldCheck, Server, RefreshCw } from "lucide-react";
+import { Sun, Database, Server, RefreshCw } from "lucide-react";
 import type { AppSettings } from "../types";
 
 type TabKey = "api" | "thresholds" | "station";
