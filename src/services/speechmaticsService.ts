@@ -1,13 +1,13 @@
 /**
  * Speechmatics batch transcription service.
  *
- * In production this would use a Supabase Edge Function as a proxy
- * so the API key never reaches the browser. Here we implement the
- * direct client-side flow with a non-blocking fallback.
+ * Audio is sent to the Supabase Edge Function `speechmatics-transcribe`,
+ * which forwards it to Speechmatics server-side so the API key never
+ * reaches the browser.
  */
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../constants/config";
 
-// Speechmatics EU endpoint
-const API_BASE = "https://eu1.asr.api.speechmatics.com/v2";
+const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/speechmatics-transcribe`;
 
 export interface TranscriptionResult {
   text: string;
@@ -15,94 +15,37 @@ export interface TranscriptionResult {
 }
 
 /**
- * Transcribe audio using Speechmatics batch API.
- * Falls back gracefully if the API is unavailable.
+ * Transcribe audio via the Supabase Edge Function proxy.
+ * Falls back gracefully if the service is unavailable.
  */
 export async function transcribeAudio(audioBlob: Blob): Promise<TranscriptionResult> {
   try {
-    const apiKey = import.meta.env.VITE_SPEECHMATICS_API_KEY;
-
-    if (!apiKey || apiKey === "YOUR_SPEECHMATICS_KEY_HERE") {
-      return {
-        text: "",
-        error: "Speechmatics API key not configured. Voice transcription is unavailable.",
-      };
-    }
-
-    // Create form data
     const formData = new FormData();
-    formData.append("data_file", audioBlob, "recording.wav");
+    formData.append("data_file", audioBlob, "recording.webm");
 
-    const config = {
-      type: "transcription",
-      transcription_config: {
-        language: "en",
-        operating_point: "enhanced",
-        max_delay: 2,
-        enable_partials: false,
-      },
-    };
-    formData.append("config", JSON.stringify(config));
-
-    // Submit job
-    const submitResp = await fetch(`${API_BASE}/jobs/`, {
+    const resp = await fetch(EDGE_FUNCTION_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
       },
       body: formData,
     });
 
-    if (!submitResp.ok) {
-      const errText = await submitResp.text().catch(() => "Unknown error");
-      return { text: "", error: `Speechmatics API error: ${submitResp.status} — ${errText}` };
-    }
-
-    const jobData = await submitResp.json();
-    const jobId: string = jobData.id;
-
-    if (!jobId) {
-      return { text: "", error: "No job ID returned from Speechmatics." };
-    }
-
-    // Poll for completion
-    let attempts = 0;
-    const maxAttempts = 30; // 30 * 2s = 60s timeout
-    let result: TranscriptionResult | null = null;
-
-    while (attempts < maxAttempts && !result) {
-      await new Promise((r) => setTimeout(r, 2000));
-      attempts++;
-
-      const pollResp = await fetch(`${API_BASE}/jobs/${jobId}/transcript`, {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-      });
-
-      if (pollResp.status === 200) {
-        const transcriptData = await pollResp.json();
-        const text = extractTranscriptText(transcriptData);
-        result = { text };
-      } else if (pollResp.status === 404) {
-        // Job not done yet
-        continue;
-      } else {
-        return {
-          text: "",
-          error: `Failed to retrieve transcript (HTTP ${pollResp.status})`,
-        };
+    if (!resp.ok) {
+      let message = `Transcription failed (HTTP ${resp.status}).`;
+      try {
+        const data = await resp.json();
+        if (data?.error) message = data.error;
+      } catch {
+        // keep generic message
       }
+      return { text: "", error: message };
     }
 
-    if (!result) {
-      return { text: "", error: "Transcription timed out. Please try again." };
-    }
-
-    return result;
+    const data = await resp.json();
+    return { text: typeof data?.text === "string" ? data.text : "" };
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown transcription error";
-    console.warn("Speechmatics transcription failed:", message);
+    console.warn("Speechmatics transcription failed:", err);
     return {
       text: "",
       error: "Transcription service is offline. Manual typing is available as a fallback.",
@@ -111,24 +54,9 @@ export async function transcribeAudio(audioBlob: Blob): Promise<TranscriptionRes
 }
 
 /**
- * Extract readable text from Speechmatics transcript JSON.
- */
-function extractTranscriptText(data: Record<string, unknown>): string {
-  try {
-    const results = (data as any).results ?? [];
-    return results
-      .map((r: any) => r?.alternatives?.[0]?.content ?? "")
-      .filter(Boolean)
-      .join(" ");
-  } catch {
-    return "";
-  }
-}
-
-/**
- * Check if Speechmatics is configured.
+ * Transcription is available whenever the Edge Function is deployed —
+ * the key itself never lives in the client.
  */
 export function isSpeechmaticsConfigured(): boolean {
-  const key = import.meta.env.VITE_SPEECHMATICS_API_KEY;
-  return !!key && key !== "YOUR_SPEECHMATICS_KEY_HERE";
+  return true;
 }
