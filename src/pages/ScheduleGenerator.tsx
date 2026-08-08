@@ -31,7 +31,7 @@ interface ScheduleViolation {
 
 export default function ScheduleGenerator() {
   const { state, setSchedule, setCurrentSchedule } = useAppState();
-  const { employees, schedule } = state;
+  const { employees, schedule, settings } = state;
   const navigate = useNavigate();
 
   const [violations, setViolations] = useState<ScheduleViolation[]>([]);
@@ -69,7 +69,7 @@ export default function ScheduleGenerator() {
   // Compute all reports when schedule changes
   const reportsByDay = useMemo(() => {
     if (!schedule) return [];
-    const reports = calculateFatigueReports(employees, schedule);
+    const reports = calculateFatigueReports(employees, schedule, settings.thresholds);
     const byDay: Map<number, typeof reports> = new Map();
     for (const r of reports) {
       const existing = byDay.get(r.dayIndex) ?? [];
@@ -77,7 +77,7 @@ export default function ScheduleGenerator() {
       byDay.set(r.dayIndex, existing);
     }
     return schedule.days.map((_, idx) => byDay.get(idx) ?? []);
-  }, [employees, schedule]);
+  }, [employees, schedule, settings.thresholds]);
 
   // Derive violations
   useEffect(() => {
@@ -127,7 +127,6 @@ export default function ScheduleGenerator() {
     navigate("/stress-test");
   }, [navigate]);
 
-  // Toggle employee in a shift
   const handleToggleEmployeeInShift = useCallback(
     (dayIdx: number, shiftType: ShiftType, employeeId: string) => {
       if (!schedule) return;
@@ -451,7 +450,7 @@ export default function ScheduleGenerator() {
         </span>
         <span className="flex items-center gap-1">
           <span className="inline-block h-2 w-4 rounded-sm bg-fatigue-red" />
-          Red Zone (≥75% FI)
+          Red Zone (≥{settings.thresholds.hardRejectThreshold}% FI)
         </span>
       </div>
     </div>

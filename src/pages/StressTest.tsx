@@ -24,7 +24,7 @@ const VERDICT_CONFIG: Record<PersonaVerdict, { label: string; bg: string; text: 
 
 export default function StressTest() {
   const { state, addStressTestResult, addOverrideEntry } = useAppState();
-  const { schedule, archive, employees } = state;
+  const { schedule, archive, employees, settings } = state;
 
   const [isRunning, setIsRunning] = useState(false);
   const [currentResult, setCurrentResult] = useState<StressTestResult | null>(null);
@@ -124,6 +124,14 @@ export default function StressTest() {
 
   return (
     <div className="stag-watermark animate-fade-in space-y-6">
+      {/* Live-wired config banner */}
+      <div className="flex items-center gap-2 text-[10px] text-text-muted">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-fatigue-green" />
+        <span>Alert: {settings.thresholds.alertThreshold}% · Hard reject: {settings.thresholds.hardRejectThreshold}%</span>
+        {!settings.thresholds.enforceILO48h && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">ILO 48h OFF</span>}
+        {!settings.thresholds.enforce11hRest && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">11h Rest OFF</span>}
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

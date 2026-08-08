@@ -33,6 +33,7 @@ export interface FatigueReport {
   shift: ShiftType;
   fatigueIndex: number;
   redZone: boolean;
+  alert: boolean;
   violations: FatigueViolation[];
 }
 
@@ -41,6 +42,56 @@ export interface AppConstraints {
   maxConsecutiveNights: number;
   seniorStaffPerNight: number;
 }
+
+// ── Fatigue Config (live-wired thresholds) ──
+
+export interface FatigueConfig {
+  alertThreshold?: number;      // default 70
+  hardRejectThreshold?: number; // default 85
+  enforceILO48h?: boolean;      // default true
+  enforce11hRest?: boolean;     // default true
+}
+
+// ── User (from landing-and-auth PRD) ──
+
+export interface User {
+  persona: Persona;
+  displayName: string;
+  role: string;
+  email: string;
+}
+
+// ── App Settings ──
+
+export interface AppSettings {
+  thresholds: {
+    alertThreshold: number;
+    hardRejectThreshold: number;
+    enforceILO48h: boolean;
+    enforce11hRest: boolean;
+  };
+  station: {
+    id: string;
+    name: string;
+    lat: number;
+    lon: number;
+  };
+}
+
+export const DEFAULT_SETTINGS: AppSettings = {
+  thresholds: {
+    alertThreshold: 70,
+    hardRejectThreshold: 85,
+    enforceILO48h: true,
+    enforce11hRest: true,
+  },
+  station: {
+    id: "CGK",
+    name: "NexaGlobal Air-Hub · CGK",
+    lat: -6.2088,
+    lon: 106.8456,
+  },
+};
 
 // ── Stress Test Types ──
 
@@ -101,6 +152,18 @@ export const PERSONA_LABELS: Record<Persona, string> = {
   auditor: "Safety Compliance Auditor",
 };
 
+export const PERSONA_DESCRIPTIONS: Record<Persona, string> = {
+  shift_manager: "Full operational access",
+  employee: "Personal circadian view",
+  auditor: "Archive & compliance",
+};
+
+export const PERSONA_DEFAULT_ROUTE: Record<Persona, string> = {
+  shift_manager: "/dashboard",
+  employee: "/employee",
+  auditor: "/dashboard",
+};
+
 // ── App State ──
 
 export type AppAction =
@@ -111,7 +174,10 @@ export type AppAction =
   | { type: "CLEAR_ARCHIVE" }
   | { type: "ADD_STRESS_TEST_RESULT"; payload: { schedule: Schedule; result: StressTestResult } }
   | { type: "ADD_OVERRIDE_ENTRY"; payload: { schedule: Schedule; result: StressTestResult; managerNote: string; employeeIds: string[] } }
-  | { type: "SET_PERSONA"; payload: Persona };
+  | { type: "SET_PERSONA"; payload: Persona }
+  | { type: "SET_USER"; payload: User }
+  | { type: "CLEAR_USER" }
+  | { type: "UPDATE_SETTINGS"; payload: Partial<AppSettings> };
 
 export interface AppState {
   employees: Employee[];
@@ -119,4 +185,6 @@ export interface AppState {
   constraints: AppConstraints;
   archive: ArchiveEntry[];
   persona: Persona;
+  user: User | null;
+  settings: AppSettings;
 }

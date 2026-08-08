@@ -1,11 +1,11 @@
-import type { Employee, Schedule, FatigueReport, ShiftType } from "../types";
+import type { Employee, Schedule, FatigueReport, ShiftType, FatigueConfig } from "../types";
 
 /**
  * Calculate Fatigue Index and violations for every employee across a 7-day schedule.
  *
  * Compliance Rules checked:
- *   Rule 1 — Max 48 hours work per employee per week
- *   Rule 2 — Minimum 11 continuous hours rest per 24-hour period
+ *   Rule 1 — Max 48 hours work per employee per week (gated by config.enforceILO48h)
+ *   Rule 2 — Minimum 11 continuous hours rest per 24-hour period (gated by config.enforce11hRest)
  *   Rule 3 — Minimum 1 full 24-hour rest day per 7-day cycle
  *   Rule 4 — Max 3 consecutive night shifts before mandatory 48-hour reset
  *   Rule 5 — Prefer clockwise rotation (Morning -> Afternoon -> Night)
@@ -17,18 +17,23 @@ import type { Employee, Schedule, FatigueReport, ShiftType } from "../types";
  *   +25% per consecutive night shift without 48h reset (Rule 8)
  *   Fatigue carries forward: current_day * 0.6 + base * 0.4
  *
- * Rule 9 — Fatigue Index >= 75% triggers Red Zone flag
+ * Red Zone triggered at config.hardRejectThreshold (default 85)
+ * Alert triggered at config.alertThreshold (default 70)
  */
 export function calculateFatigueReports(
   employees: Employee[],
   schedule: Schedule,
+  config: FatigueConfig = {},
 ): FatigueReport[] {
   const reports: FatigueReport[] = [];
+  const alertThreshold = config.alertThreshold ?? 70;
+  const hardRejectThreshold = config.hardRejectThreshold ?? 85;
+  const enforceILO48h = config.enforceILO48h !== false;  // default true
+  const enforce11hRest = config.enforce11hRest !== false; // default true
 
   for (const emp of employees) {
-    // Track consecutive nights for Rule 4 / Rule 8
     let consecutiveNights = 0;
-    let lastNightShiftDay = -99; // day index of last night shift
+    let lastNightShiftDay = -99;
 
     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
       const day = schedule.days[dayIdx];
@@ -46,7 +51,6 @@ export function calculateFatigueReports(
         consecutiveNights++;
         lastNightShiftDay = dayIdx;
       } else {
-        // Reset consecutive nights after a 48-hour break (2+ days without Night)
         if (dayIdx - lastNightShiftDay >= 2) {
           consecutiveNights = 0;
         }
@@ -79,15 +83,15 @@ export function calculateFatigueReports(
       // Clamp 0–100
       fatigueIndex = Math.max(0, Math.min(100, fatigueIndex));
 
-      // Rule 9 — Red Zone if >= 75%
-      const redZone = fatigueIndex >= 75;
+      // Parameterized thresholds
+      const redZone = fatigueIndex >= hardRejectThreshold;
+      const alert = !redZone && fatigueIndex >= alertThreshold;
 
       // ── Determine violations ──
       const violations: { rule: string; message: string }[] = [];
 
-      // Rule 1 — Max 48h/week
-      if (dayIdx === 6) {
-        // On the last day, check total weekly hours
+      // Rule 1 — Max 48h/week (gated)
+      if (enforceILO48h && dayIdx === 6) {
         const totalHours = countWeeklyHours(emp.id, schedule, 0, 6);
         if (totalHours > 48) {
           violations.push({
@@ -97,8 +101,8 @@ export function calculateFatigueReports(
         }
       }
 
-      // Rule 2 — Minimum 11h rest between shifts
-      if (dayIdx > 0) {
+      // Rule 2 — Minimum 11h rest between shifts (gated)
+      if (enforce11hRest && dayIdx > 0) {
         const prevDay = schedule.days[dayIdx - 1];
         const prevShift = findEmployeeShift(emp.id, prevDay);
         if (
@@ -142,7 +146,6 @@ export function calculateFatigueReports(
           const prevIdx = rotationOrder.indexOf(prevShift as any);
           const currIdx = rotationOrder.indexOf(shift as any);
           if (prevIdx >= 0 && currIdx >= 0 && currIdx < prevIdx) {
-            // Counter-clockwise (e.g., Night → Afternoon, Afternoon → Morning)
             violations.push({
               rule: "Rule 5",
               message: `Counter-clockwise rotation: ${prevShift}→${shift}`,
@@ -176,6 +179,7 @@ export function calculateFatigueReports(
         shift,
         fatigueIndex,
         redZone,
+        alert,
         violations,
       });
     }

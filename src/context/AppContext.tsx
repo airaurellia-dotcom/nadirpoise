@@ -1,6 +1,8 @@
 import { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
-import type { AppState, AppAction, Schedule, ArchiveEntry, StressTestResult, Persona } from "../types";
+import type { AppState, AppAction, Schedule, ArchiveEntry, StressTestResult, Persona, User, AppSettings } from "../types";
+import { DEFAULT_SETTINGS } from "../types";
 import { employees as mockEmployees } from "../data/employees";
+import { DEMO_CREDENTIALS } from "../constants/config";
 
 const defaultConstraints = {
   minHeadcount: 3,
@@ -14,6 +16,8 @@ const initialState: AppState = {
   constraints: defaultConstraints,
   archive: [],
   persona: "shift_manager",
+  user: null,
+  settings: DEFAULT_SETTINGS,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -72,6 +76,21 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, archive: [] };
     case "SET_PERSONA":
       return { ...state, persona: action.payload };
+    case "SET_USER":
+      return { ...state, user: action.payload, persona: action.payload.persona };
+    case "CLEAR_USER":
+      return { ...state, user: null };
+    case "UPDATE_SETTINGS": {
+      const current = state.settings;
+      const patch = action.payload;
+      return {
+        ...state,
+        settings: {
+          thresholds: { ...current.thresholds, ...patch.thresholds },
+          station: { ...current.station, ...patch.station },
+        },
+      };
+    }
     default:
       return state;
   }
@@ -86,6 +105,9 @@ interface AppContextValue {
   addStressTestResult: (schedule: Schedule, result: StressTestResult) => void;
   addOverrideEntry: (schedule: Schedule, result: StressTestResult, managerNote: string, employeeIds: string[]) => void;
   setPersona: (persona: Persona) => void;
+  login: (persona: Persona) => void;
+  logout: () => void;
+  updateSettings: (payload: Partial<AppSettings>) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -96,7 +118,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setSchedule = useCallback(
     (schedule: Schedule) => {
       dispatch({ type: "GENERATE_SCHEDULE", payload: schedule });
-      // Auto-archive generated schedules
       const entry: ArchiveEntry = {
         id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
@@ -136,9 +157,45 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const login = useCallback(
+    (persona: Persona) => {
+      const cred = DEMO_CREDENTIALS[persona];
+      const user: User = {
+        persona,
+        displayName: cred.displayName,
+        role: cred.role,
+        email: cred.email,
+      };
+      dispatch({ type: "SET_USER", payload: user });
+    },
+    [],
+  );
+
+  const logout = useCallback(() => {
+    dispatch({ type: "CLEAR_USER" });
+    dispatch({ type: "SET_PERSONA", payload: "shift_manager" });
+  }, []);
+
+  const updateSettings = useCallback(
+    (payload: Partial<AppSettings>) => dispatch({ type: "UPDATE_SETTINGS", payload }),
+    [],
+  );
+
   return (
     <AppContext.Provider
-      value={{ state, dispatch, setSchedule, setCurrentSchedule, addArchiveEntry, addStressTestResult, addOverrideEntry, setPersona }}
+      value={{
+        state,
+        dispatch,
+        setSchedule,
+        setCurrentSchedule,
+        addArchiveEntry,
+        addStressTestResult,
+        addOverrideEntry,
+        setPersona,
+        login,
+        logout,
+        updateSettings,
+      }}
     >
       {children}
     </AppContext.Provider>

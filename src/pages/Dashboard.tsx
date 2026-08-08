@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppState } from "../context/AppContext";
 import { calculateFatigueReports, fatigueBarClass, fatigueLabel } from "../lib/fatigue";
 import type { ShiftType } from "../types";
@@ -21,14 +22,15 @@ const SHIFT_COLORS: Record<string, string> = {
 
 export default function Dashboard() {
   const { state } = useAppState();
-  const { employees, schedule, archive } = state;
+  const { employees, schedule, archive, settings } = state;
+  const navigate = useNavigate();
   const [showAlerts, setShowAlerts] = useState(false);
 
-  // Calculate fatigue reports for the schedule
+  // Calculate fatigue reports for the schedule (live-wired thresholds)
   const reports = useMemo(() => {
     if (!schedule) return [];
-    return calculateFatigueReports(employees, schedule);
-  }, [employees, schedule]);
+    return calculateFatigueReports(employees, schedule, settings.thresholds);
+  }, [employees, schedule, settings.thresholds]);
 
   // Today's index
   const todayIdx = new Date().getDay() - 1;
@@ -82,6 +84,15 @@ export default function Dashboard() {
     return set;
   }, [reports, todayIndex]);
 
+  const alertEmployees = useMemo(() => {
+    const set = new Set<string>();
+    const todayReports = reports.filter((r) => r.dayIndex === todayIndex);
+    for (const r of todayReports) {
+      if (r.alert) set.add(r.employeeId);
+    }
+    return set;
+  }, [reports, todayIndex]);
+
   const getTodayShift = (employeeId: string): ShiftType => {
     if (!schedule) return "Off";
     const today = schedule.days[todayIndex];
@@ -115,7 +126,7 @@ export default function Dashboard() {
     return (
       <div className="stag-watermark animate-fade-in space-y-6">
         <div>
-          <h1 className="font-heading text-xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="font-heading text-xl font-bold tracking-tight">Dashboard &amp; Fleet Roster</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
             Real-time fatigue metrics and employee status
           </p>
@@ -139,11 +150,12 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="font-heading text-xl font-bold tracking-tight">Dashboard &amp; Fleet Roster</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
             Real-time fatigue metrics &amp; employee status
           </p>
         </div>
+        <div className="flex items-center gap-2">
         {latestStressTest && (
           <div className={`rounded-sm border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] ${
             latestStressTest.overallVerdict === "APPROVE"
