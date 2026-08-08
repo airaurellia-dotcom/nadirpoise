@@ -5,15 +5,10 @@ import {
   LogOut,
   User,
   Check,
-  Menu,
 } from "lucide-react";
 import { useAppState } from "../context/AppContext";
 import { PERSONA_DEFAULT_ROUTE, PERSONA_DESCRIPTIONS } from "../types";
 import type { Persona } from "../types";
-
-interface TopNavbarProps {
-  onToggleMobile: () => void;
-}
 
 const BREADCRUMB_MAP: Record<string, string> = {
   "/dashboard": "Dashboard / Fleet Fatigue Index",
@@ -41,7 +36,7 @@ const PERSONA_COLORS: Record<Persona, string> = {
 
 const PERSONA_LIST: Persona[] = ["shift_manager", "employee", "auditor"];
 
-export default function TopNavbar({ onToggleMobile }: TopNavbarProps) {
+export default function TopNavbar() {
   const { state, login, logout } = useAppState();
   const { user, persona } = state;
   const location = useLocation();
@@ -88,19 +83,10 @@ export default function TopNavbar({ onToggleMobile }: TopNavbarProps) {
 
   return (
     <header className="sticky top-0 z-30 border-b border-[#334155]/15 bg-white/95 backdrop-blur-sm">
-      <div className="flex h-14 items-center justify-between gap-2 px-3 sm:px-4 md:px-6">
-        {/* Breadcrumb + mobile hamburger */}
-        <div className="flex min-w-0 items-center gap-2">
-          {/* Mobile hamburger button */}
-          <button
-            onClick={onToggleMobile}
-            className="btn-chrome flex h-9 w-9 shrink-0 items-center justify-center rounded-sm md:hidden"
-            aria-label="Open navigation menu"
-            aria-haspopup="dialog"
-          >
-            <Menu size={16} />
-          </button>
-          <span className="truncate text-xs font-medium text-text-secondary">
+      <div className="flex h-14 items-center justify-between px-6">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-text-secondary">
             {breadcrumb}
           </span>
         </div>
@@ -114,7 +100,7 @@ export default function TopNavbar({ onToggleMobile }: TopNavbarProps) {
             <span className={`flex h-6 w-6 items-center justify-center rounded-sm text-[10px] font-bold text-white ${PERSONA_COLORS[persona]}`}>
               {initials}
             </span>
-            <div className="hidden flex-col items-start text-left sm:flex">
+            <div className="flex flex-col items-start text-left">
               <span className="text-[11px] font-medium leading-tight text-text-primary">
                 {user?.displayName ?? "User"}
               </span>
