@@ -24,57 +24,39 @@ const VERDICT_CONFIG: Record<PersonaVerdict, { label: string; bg: string; text: 
   },
 };
 
-/** Map an AI persona finding string to a verdict based on severity keywords */
-function deriveVerdictFromFinding(finding: string): PersonaVerdict {
-  const lower = finding.toLowerCase();
-  if (lower.includes("🔴") || lower.includes("reject") || lower.includes("critical") || lower.includes("violation") || lower.includes("red zone")) {
-    return "REJECT";
-  }
-  if (lower.includes("⚠️") || lower.includes("caution") || lower.includes("warning") || lower.includes("concern") || lower.includes("flag")) {
-    return "CAUTION";
-  }
-  return "APPROVE";
-}
-
-/** Build a StressTestResult from the AI API response */
+/** Build a StressTestResult from the AI API response using the new multi-agent schema */
 function buildResultFromAI(
   ai: AIStressTestResponse,
   schedule: Parameters<typeof callStressTestAI>[0],
 ): StressTestResult {
-  const feedbackItems = ai.persona_feedback ?? [];
+  const evaluations = ai.persona_evaluations ?? [];
 
-  const personaResults: StressTestPersonaResult[] = feedbackItems.map((fb, idx) => {
-    const agent = stressTestAgents[idx] ?? stressTestAgents[0];
-    const verdict = deriveVerdictFromFinding(fb.finding);
+  const personaResults: StressTestPersonaResult[] = evaluations.map((evalItem) => {
+    const agent = stressTestAgents.find((a) => a.name === evalItem.persona_name) ?? stressTestAgents[0];
+    const verdict: PersonaVerdict = evalItem.verdict === "REJECT" ? "REJECT" : "APPROVE";
     return {
       personaId: agent.id,
       personaName: agent.name,
       personaTitle: agent.title,
       personaIcon: agent.icon,
       verdict,
-      findings: [fb.finding],
-      detail: fb.finding,
+      findings: [evalItem.argument],
+      detail: evalItem.argument,
+      metrics: evalItem.metrics,
+      argument: evalItem.argument,
     };
   });
 
-  // Fallback: if AI returned fewer personas than expected, fill remaining with the last agent
-  while (personaResults.length < stressTestAgents.length) {
-    const agent = stressTestAgents[personaResults.length];
-    const verdict: PersonaVerdict = ai.status === "APPROVED" ? "APPROVE" : ai.status === "CAUTION" ? "CAUTION" : "REJECT";
-    personaResults.push({
-      personaId: agent.id,
-      personaName: agent.name,
-      personaTitle: agent.title,
-      personaIcon: agent.icon,
-      verdict,
-      findings: ["No specific feedback provided for this persona."],
-      detail: "No specific feedback provided for this persona.",
-    });
+  // Derive overall verdict from AI's own verdict + risk score threshold
+  const score = ai.overall_risk_score ?? 0;
+  let overallVerdict: PersonaVerdict;
+  if (ai.overall_verdict === "REJECT" || score >= 70) {
+    overallVerdict = "REJECT";
+  } else if (score >= 40) {
+    overallVerdict = "CAUTION";
+  } else {
+    overallVerdict = "APPROVE";
   }
-
-  const overallVerdict: PersonaVerdict =
-    ai.status === "APPROVED" ? "APPROVE" :
-    ai.status === "CAUTION" ? "CAUTION" : "REJECT";
 
   return {
     id: crypto.randomUUID(),
@@ -225,7 +207,7 @@ export default function StressTest() {
         <span>AI-Powered · {settings.thresholds.alertThreshold}% alert · {settings.thresholds.hardRejectThreshold}% hard reject</span>
         {!settings.thresholds.enforceILO48h && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">ILO 48h OFF</span>}
         {!settings.thresholds.enforce11hRest && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">11h Rest OFF</span>}
-        <span className="text-[9px] text-text-muted/50">AIML · meta-llama/Llama-3.3-70B-Instruct-Turbo</span>
+        <span className="text-[9px] text-text-muted/50">AIML · mistralai/Mistral-7B-Instruct-v0.2</span>
       </div>
 
       {/* Header */}
@@ -321,7 +303,7 @@ export default function StressTest() {
                 {currentResult.aiRaw && (
                   <div>
                     <p className="text-[10px] text-text-muted">
-                      Risk Score: {currentResult.aiRaw.risk_score} · Violations: {currentResult.aiRaw.nadir_violations}
+                      Risk Score: {currentResult.aiRaw.overall_risk_score}
                     </p>
                     {currentResult.aiRaw.recommendations && currentResult.aiRaw.recommendations.length > 0 && (
                       <div className="mt-2 space-y-0.5">
@@ -420,7 +402,7 @@ export default function StressTest() {
                 </div>
                 {r.aiRaw && (
                   <p className="text-[9px] text-text-muted mt-0.5">
-                    AIML · Risk: {r.aiRaw.risk_score} · Violations: {r.aiRaw.nadir_violations}
+                    AIML · Risk: {r.aiRaw.overall_risk_score}
                   </p>
                 )}
               </button>
@@ -555,6 +537,9 @@ function PersonaCard({
       {/* Expanded findings */}
       {isExpanded && (
         <div className="border-t border-[#334155]/10 px-4 pb-4 pt-3">
+          {result.metrics && (
+            <p className="mb-2 text-[10px] font-mono text-text-muted">{result.metrics}</p>
+          )}
           <ul className="space-y-1.5">
             {result.findings.map((finding, i) => {
               const isWarning = finding.startsWith("⚠️");

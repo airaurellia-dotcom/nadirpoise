@@ -97,18 +97,17 @@ export const DEFAULT_SETTINGS: AppSettings = {
 
 /** Raw response from the ai-stress-test Edge Function */
 export interface AIStressTestResponse {
-  status: "APPROVED" | "CAUTION" | "REJECT";
-  risk_score: number;
-  overall_risk_score?: number;
-  nadir_violations: number;
-  persona_feedback: AIStressTestPersonaFeedback[];
-  persona_evaluations?: Array<{ persona: string; finding: string }>;
-  recommendations?: string[];
+  overall_verdict: "APPROVE" | "REJECT";
+  overall_risk_score: number;
+  persona_evaluations: AIStressTestPersonaEvaluation[];
+  recommendations: string[];
 }
 
-export interface AIStressTestPersonaFeedback {
-  persona: string;
-  finding: string;
+export interface AIStressTestPersonaEvaluation {
+  persona_name: string;
+  verdict: "APPROVE" | "REJECT";
+  metrics: string;
+  argument: string;
 }
 
 /** Raw response from the ai-override-audit Edge Function */
@@ -130,6 +129,8 @@ export interface StressTestPersonaResult {
   verdict: PersonaVerdict;
   findings: string[];
   detail: string;
+  metrics?: string;
+  argument?: string;
 }
 
 export interface StressTestResult {
