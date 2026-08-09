@@ -148,7 +148,7 @@ export default function Dashboard() {
   return (
     <div className="stag-watermark animate-fade-in space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-xl font-bold tracking-tight">Dashboard &amp; Fleet Roster</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
@@ -192,7 +192,7 @@ export default function Dashboard() {
       <BrightDataTicker />
 
       {/* Summary bar */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryCard
           label="Avg Fatigue Index"
           value={`${summary.avgFatigue}%`}

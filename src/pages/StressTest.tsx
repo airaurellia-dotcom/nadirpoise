@@ -133,7 +133,7 @@ export default function StressTest() {
       </div>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-xl font-bold tracking-tight">Rollout Stress Test</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
@@ -181,7 +181,7 @@ export default function StressTest() {
                 ? "border-verd-caution/30 bg-verd-caution-bg"
                 : "border-verd-reject/30 bg-verd-reject-bg"
           }`}>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted">Overall Verdict</p>
                 <p className={`font-heading text-lg font-bold ${
@@ -194,7 +194,7 @@ export default function StressTest() {
                   {currentResult.overallVerdict}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="text-xs text-verd-approve">{currentResult.summary.approved} Approved</span>
                 <span className="text-xs text-verd-caution">{currentResult.summary.cautioned} Cautioned</span>
                 <span className="text-xs text-verd-reject">{currentResult.summary.rejected} Rejected</span>

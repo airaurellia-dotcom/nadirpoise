@@ -65,7 +65,7 @@ export default function Archive() {
       </div>
 
       {/* Search / Filter bar */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <svg
             width="14"

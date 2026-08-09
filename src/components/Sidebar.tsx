@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   Settings,
   X,
-  Menu,
 } from "lucide-react";
 import StagIcon from "./StagIcon";
 import { useAppState } from "../context/AppContext";
@@ -33,12 +32,36 @@ const NAV_BY_PERSONA: Record<Persona, NavItem[]> = {
   auditor: ALL_NAV_ITEMS.filter((n) => n.to === "/dashboard" || n.to === "/dispatch" || n.to === "/settings"),
 };
 
-export default function Sidebar() {
+interface SidebarProps {
+  isMobileOpen: boolean;
+  onCloseMobile: () => void;
+}
+
+export default function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
   const { state } = useAppState();
   const location = useLocation();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = NAV_BY_PERSONA[state.persona];
+
+  // Close drawer on Escape key
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onCloseMobile();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileOpen, onCloseMobile]);
+
+  // Lock body scroll while the mobile drawer is open
+  useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [isMobileOpen]);
 
   const sidebarContent = (
     <div className="flex h-full flex-col">
@@ -68,7 +91,7 @@ export default function Sidebar() {
               key={item.to}
               to={item.to}
               end={item.to === "/dashboard"}
-              onClick={() => setMobileOpen(false)}
+              onClick={onCloseMobile}
               className={`sidebar-nav-item ${isActive ? "active" : ""}`}
             >
               <span className="shrink-0 text-current opacity-70">{item.icon}</span>
@@ -99,34 +122,40 @@ export default function Sidebar() {
         {sidebarContent}
       </aside>
 
-      {/* Mobile hamburger */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="btn-chrome fixed left-3 top-3 z-50 flex h-8 w-8 items-center justify-center rounded-sm md:hidden"
-        aria-label="Open navigation menu"
+      {/* Mobile drawer — slides in from the left */}
+      <div
+        className={`fixed inset-0 z-50 md:hidden ${
+          isMobileOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+        aria-hidden={!isMobileOpen}
       >
-        <Menu size={16} />
-      </button>
+        {/* Scrim */}
+        <div
+          className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
+            isMobileOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={onCloseMobile}
+        />
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <div
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="relative h-screen w-[260px] animate-slide-up border-r border-[#334155]/15 bg-white shadow-lg">
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-sm text-text-muted hover:bg-bg-hover hover:text-text-primary"
-              aria-label="Close menu"
-            >
-              <X size={16} />
-            </button>
-            {sidebarContent}
-          </aside>
-        </div>
-      )}
+        {/* Drawer panel */}
+        <aside
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          className={`absolute inset-y-0 left-0 h-full w-[280px] border-r border-[#334155]/15 bg-white shadow-xl transition-transform duration-300 ease-out ${
+            isMobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <button
+            onClick={onCloseMobile}
+            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-sm text-text-muted transition-colors hover:bg-bg-hover hover:text-text-primary"
+            aria-label="Close menu"
+          >
+            <X size={16} />
+          </button>
+          {sidebarContent}
+        </aside>
+      </div>
     </>
   );
 }

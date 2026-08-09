@@ -110,6 +110,25 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-bg-base font-sans">
+      {/* ── Top Brand Header ── */}
+      <header className="sticky top-0 z-40 border-b border-[#334155]/10 bg-bg-base/70 backdrop-blur-sm">
+        <div className="mx-auto flex h-12 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <StagIcon size={22} className="shrink-0 text-sage-dark" />
+            <span className="font-heading text-lg font-bold tracking-tight text-text-primary sm:text-xl">
+              NadirPoise
+            </span>
+            <span className="ml-1 hidden items-center gap-1.5 rounded-sm border border-[#334155]/15 bg-white/70 px-2 py-0.5 text-[9px] font-mono font-semibold uppercase tracking-[0.06em] text-text-muted sm:flex">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-green opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-green" />
+              </span>
+              NexaGlobal Terminal · 24/7
+            </span>
+          </div>
+        </div>
+      </header>
+
       {/* ── Floating Profile Switcher (top-right) ── */}
       <div ref={dropdownRef} className="fixed right-4 top-4 z-50">
         <button
@@ -181,6 +200,14 @@ export default function Landing() {
           SECTION 1: HERO
           ══════════════════════════════════════════ */}
       <section className="cream-grid relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 pt-12">
+        {/* ── Subtle pastel gradient overlay (pink → purple → blue) ── */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 select-none"
+          style={{
+            background: 'radial-gradient(circle at 50% -10%, rgba(244, 114, 182, 0.12) 0%, rgba(168, 85, 247, 0.10) 30%, rgba(59, 130, 246, 0.08) 55%, rgba(248, 246, 240, 0.95) 80%, #F8F6F0 100%)',
+          }}
+        />
         {/* Decorative stag watermark */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <StagIcon size={320} variant="watermark" className="text-chrome/20" />

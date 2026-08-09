@@ -119,7 +119,7 @@ export default function DispatchGate() {
   return (
     <div className="animate-fade-in space-y-6">
       {/* Title */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-xl font-bold tracking-tight">Dispatch Gate</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">Gate &amp; Voice Override</p>
@@ -132,7 +132,7 @@ export default function DispatchGate() {
       </div>
 
       {/* Gate banner */}
-      <div className={`liquid-glass flex items-center gap-4 border p-5 ${gateConfig.border} ${gateConfig.bg}`}>
+      <div className={`liquid-glass flex flex-wrap items-center gap-4 border p-5 ${gateConfig.border} ${gateConfig.bg}`}>
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${gateConfig.color} opacity-80`}>
           {gateConfig.icon}
         </div>

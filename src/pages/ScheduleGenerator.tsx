@@ -177,7 +177,7 @@ export default function ScheduleGenerator() {
   if (!schedule) {
     return (
       <div className="stag-watermark animate-fade-in space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="font-heading text-xl font-bold tracking-tight">Schedule Generator</h1>
             <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
@@ -206,14 +206,14 @@ export default function ScheduleGenerator() {
   return (
     <div className="stag-watermark animate-fade-in space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-xl font-bold tracking-tight">Schedule Generator</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
             Click any cell to toggle an employee — changes apply immediately.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {violations.length > 0 && (
             <button
               onClick={() => setShowViolationPanel(!showViolationPanel)}
@@ -279,7 +279,7 @@ export default function ScheduleGenerator() {
 
       {/* Light exposure calibration panel — NASA POWER */}
       <div className="liquid-glass p-4">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="flex items-center gap-2 text-xs font-semibold text-text-primary">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-amber">
