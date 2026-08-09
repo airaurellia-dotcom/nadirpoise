@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppState } from "../context/AppContext";
-import { SUPABASE_URL, NASA_POWER_ENDPOINT, SPEECHMATICS_SECRET_NAME } from "../constants/config";
-import { Sun, Database, Server, RefreshCw } from "lucide-react";
+import {
+  SUPABASE_URL,
+  NASA_POWER_ENDPOINT,
+  SPEECHMATICS_SECRET_NAME,
+  AI_STRESS_TEST_URL,
+  AIML_MODEL,
+} from "../constants/config";
+import { Sun, Database, BrainCircuit, RefreshCw } from "lucide-react";
 import type { AppSettings } from "../types";
 
 type TabKey = "api" | "thresholds" | "station";
@@ -22,6 +28,25 @@ export default function Settings() {
   const { state, updateSettings } = useAppState();
   const { settings } = state;
   const [activeTab, setActiveTab] = useState<TabKey>("api");
+  const [aimlConnected, setAimlConnected] = useState<boolean | null>(null);
+
+  // Dynamically check AIML API Edge Function connectivity
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      try {
+        const res = await fetch(AI_STRESS_TEST_URL, {
+          method: "OPTIONS",
+        });
+        // If we get any response (including CORS preflight success), the function is reachable
+        if (!cancelled) setAimlConnected(res.status < 500 || res.status === 0);
+      } catch {
+        if (!cancelled) setAimlConnected(false);
+      }
+    };
+    check();
+    return () => { cancelled = true; };
+  }, []);
 
   const handleSlider = (key: "alertThreshold" | "hardRejectThreshold", value: number) => {
     updateSettings({
@@ -136,25 +161,55 @@ export default function Settings() {
             </p>
           </div>
 
-          {/* OpenRouter */}
+          {/* AIML API (aimlapi.com) */}
           <div className="paper-card p-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-bg-elevated text-text-muted">
-                  <Server size={18} />
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm transition-colors duration-150 ${
+                  aimlConnected === true
+                    ? "bg-verd-approve-bg text-verd-approve"
+                    : aimlConnected === false
+                      ? "bg-[#FEF2F2] text-fatigue-red"
+                      : "bg-bg-elevated text-text-muted"
+                }`}>
+                  <BrainCircuit size={18} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-text-primary">OpenRouter / AI-ML</h3>
-                  <p className="text-[10px] text-text-muted">Supplementary AI model routing</p>
+                  <h3 className="text-sm font-semibold text-text-primary">AIML API (aimlapi.com)</h3>
+                  <p className="text-[10px] text-text-muted">5-Persona Circadian Safety &amp; Compliance Engine</p>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-sm border border-[#334155]/20 bg-white px-2.5 py-1 text-[10px] font-medium text-text-muted">
-                Demo placeholder
+              <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-[10px] font-medium transition-colors duration-150 ${
+                aimlConnected === true
+                  ? "border-fatigue-green/30 bg-verd-approve-bg text-verd-approve"
+                  : aimlConnected === false
+                    ? "border-fatigue-red/30 bg-[#FEF2F2] text-fatigue-red"
+                    : "border-[#334155]/20 bg-bg-elevated text-text-muted"
+              }`}>
+                <span className={`inline-block h-1.5 w-1.5 rounded-full transition-colors duration-150 ${
+                  aimlConnected === true
+                    ? "bg-fatigue-green"
+                    : aimlConnected === false
+                      ? "bg-fatigue-red"
+                      : "bg-[#CBD5E1]"
+                }`} />
+                {aimlConnected === true
+                  ? "Operational"
+                  : aimlConnected === false
+                    ? "Disconnected"
+                    : "Checking…"}
               </span>
             </div>
             <p className="mt-3 text-[11px] text-text-secondary">
-              Key: <code className="rounded-sm bg-bg-elevated px-1 font-mono text-[10px]">sk-••••••••</code> (demo, not wired)
+              Configured via Environment Variables
+              <span className="ml-1 text-text-muted">· Secret name: <code className="rounded-sm bg-bg-elevated px-1 font-mono text-[10px]">AIML_API_KEY</code></span>
             </p>
+            <div className="mt-2 flex items-center gap-2 text-[10px] text-text-muted">
+              <span className={`inline-block h-1.5 w-1.5 rounded-full ${
+                aimlConnected === true ? "bg-fatigue-green" : "bg-[#CBD5E1]"
+              }`} />
+              <span>Model: <code className="rounded-sm bg-bg-elevated px-1 font-mono text-[10px]">{AIML_MODEL}</code></span>
+            </div>
           </div>
         </div>
       )}
