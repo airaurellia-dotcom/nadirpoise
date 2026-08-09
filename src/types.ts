@@ -99,8 +99,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
 export interface AIStressTestResponse {
   status: "APPROVED" | "CAUTION" | "REJECT";
   risk_score: number;
+  overall_risk_score?: number;
   nadir_violations: number;
   persona_feedback: AIStressTestPersonaFeedback[];
+  persona_evaluations?: Array<{ persona: string; finding: string }>;
+  recommendations?: string[];
 }
 
 export interface AIStressTestPersonaFeedback {

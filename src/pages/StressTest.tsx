@@ -225,7 +225,7 @@ export default function StressTest() {
         <span>AI-Powered · {settings.thresholds.alertThreshold}% alert · {settings.thresholds.hardRejectThreshold}% hard reject</span>
         {!settings.thresholds.enforceILO48h && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">ILO 48h OFF</span>}
         {!settings.thresholds.enforce11hRest && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">11h Rest OFF</span>}
-        <span className="text-[9px] text-text-muted/50">AIML · meta-llama/llama-3.3-70b</span>
+        <span className="text-[9px] text-text-muted/50">AIML · mistralai/Mistral-7B-Instruct-v0.2</span>
       </div>
 
       {/* Header */}
@@ -257,18 +257,32 @@ export default function StressTest() {
         </button>
       </div>
 
-      {/* AI Error banner */}
+      {/* AI Error fallback — user-friendly, no raw HTTP codes */}
       {aiError && (
-        <div className="liquid-glass flex items-center gap-3 border-verd-reject/30 bg-verd-reject-bg p-4">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-verd-reject/20 text-verd-reject">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+        <div className="liquid-glass border-verd-reject/30 bg-verd-reject-bg p-6 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-verd-reject/20 text-verd-reject">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
           </div>
-          <div>
-            <p className="text-sm font-medium text-verd-reject">AI Service Error</p>
-            <p className="text-xs text-text-secondary">{aiError}</p>
-          </div>
+          <p className="text-sm font-medium text-verd-reject">Stress Test Unavailable</p>
+          <p className="mt-1 text-xs text-text-secondary">
+            Unable to complete AI Stress Test. Please check API integration settings.
+          </p>
+          <button
+            onClick={handleRunTest}
+            disabled={isRunning}
+            className="btn-chrome mt-4 rounded-sm border-verd-reject/30 px-5 py-2 text-xs font-medium text-verd-reject transition-all duration-150 active:scale-[0.97] disabled:opacity-50"
+          >
+            {isRunning ? (
+              <span className="flex items-center gap-2">
+                <span className="inline-block h-3 w-3 animate-spin rounded-full border border-verd-reject border-t-transparent" />
+                Retrying...
+              </span>
+            ) : (
+              "Retry"
+            )}
+          </button>
         </div>
       )}
 
@@ -305,9 +319,19 @@ export default function StressTest() {
                   {currentResult.overallVerdict}
                 </p>
                 {currentResult.aiRaw && (
-                  <p className="text-[10px] text-text-muted">
-                    Risk Score: {currentResult.aiRaw.risk_score} · Violations: {currentResult.aiRaw.nadir_violations}
-                  </p>
+                  <div>
+                    <p className="text-[10px] text-text-muted">
+                      Risk Score: {currentResult.aiRaw.risk_score} · Violations: {currentResult.aiRaw.nadir_violations}
+                    </p>
+                    {currentResult.aiRaw.recommendations && currentResult.aiRaw.recommendations.length > 0 && (
+                      <div className="mt-2 space-y-0.5">
+                        <p className="text-[9px] font-semibold uppercase tracking-wider text-text-muted">Recommendations</p>
+                        {currentResult.aiRaw.recommendations.map((rec, i) => (
+                          <p key={i} className="text-[10px] text-text-muted">• {rec}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

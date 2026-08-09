@@ -15,7 +15,7 @@ export const AI_OVERRIDE_AUDIT_URL = `${EDGE_FUNCTION_BASE}/ai-override-audit`;
 
 // AIML API configuration
 export const AIML_API_BASE = "https://api.aimlapi.com/v1";
-export const AIML_MODEL = "meta-llama/llama-3.3-70b-instruct";
+export const AIML_MODEL = "mistralai/Mistral-7B-Instruct-v0.2";
 
 // Demo credentials — pure facade, no real authentication
 import type { Persona } from "../types";
