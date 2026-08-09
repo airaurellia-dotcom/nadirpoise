@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from "react";
 import { useAppState } from "../context/AppContext";
-import { runStressTest } from "../lib/stressTestSimulator";
-import type { PersonaVerdict, StressTestResult, StressTestPersonaResult } from "../types";
+import { callStressTestAI } from "../services/aiApiService";
+import { fetchSolarData } from "../lib/nasaPower";
+import { stressTestAgents } from "../data/stressTestAgents";
+import type { StressTestResult, StressTestPersonaResult, PersonaVerdict, AIStressTestResponse } from "../types";
 import VoiceRecorder from "../components/VoiceRecorder";
 
 const VERDICT_CONFIG: Record<PersonaVerdict, { label: string; bg: string; text: string }> = {
@@ -22,6 +24,74 @@ const VERDICT_CONFIG: Record<PersonaVerdict, { label: string; bg: string; text: 
   },
 };
 
+/** Map an AI persona finding string to a verdict based on severity keywords */
+function deriveVerdictFromFinding(finding: string): PersonaVerdict {
+  const lower = finding.toLowerCase();
+  if (lower.includes("🔴") || lower.includes("reject") || lower.includes("critical") || lower.includes("violation") || lower.includes("red zone")) {
+    return "REJECT";
+  }
+  if (lower.includes("⚠️") || lower.includes("caution") || lower.includes("warning") || lower.includes("concern") || lower.includes("flag")) {
+    return "CAUTION";
+  }
+  return "APPROVE";
+}
+
+/** Build a StressTestResult from the AI API response */
+function buildResultFromAI(
+  ai: AIStressTestResponse,
+  schedule: Parameters<typeof callStressTestAI>[0],
+): StressTestResult {
+  const feedbackItems = ai.persona_feedback ?? [];
+
+  const personaResults: StressTestPersonaResult[] = feedbackItems.map((fb, idx) => {
+    const agent = stressTestAgents[idx] ?? stressTestAgents[0];
+    const verdict = deriveVerdictFromFinding(fb.finding);
+    return {
+      personaId: agent.id,
+      personaName: agent.name,
+      personaTitle: agent.title,
+      personaIcon: agent.icon,
+      verdict,
+      findings: [fb.finding],
+      detail: fb.finding,
+    };
+  });
+
+  // Fallback: if AI returned fewer personas than expected, fill remaining with the last agent
+  while (personaResults.length < stressTestAgents.length) {
+    const agent = stressTestAgents[personaResults.length];
+    const verdict: PersonaVerdict = ai.status === "APPROVED" ? "APPROVE" : ai.status === "CAUTION" ? "CAUTION" : "REJECT";
+    personaResults.push({
+      personaId: agent.id,
+      personaName: agent.name,
+      personaTitle: agent.title,
+      personaIcon: agent.icon,
+      verdict,
+      findings: ["No specific feedback provided for this persona."],
+      detail: "No specific feedback provided for this persona.",
+    });
+  }
+
+  const overallVerdict: PersonaVerdict =
+    ai.status === "APPROVED" ? "APPROVE" :
+    ai.status === "CAUTION" ? "CAUTION" : "REJECT";
+
+  return {
+    id: crypto.randomUUID(),
+    timestamp: new Date().toISOString(),
+    scheduleSnapshot: schedule.schedule,
+    personaResults,
+    overallVerdict,
+    summary: {
+      totalPersonas: personaResults.length,
+      approved: personaResults.filter((r) => r.verdict === "APPROVE").length,
+      cautioned: personaResults.filter((r) => r.verdict === "CAUTION").length,
+      rejected: personaResults.filter((r) => r.verdict === "REJECT").length,
+    },
+    aiRaw: ai,
+  };
+}
+
 export default function StressTest() {
   const { state, addStressTestResult, addOverrideEntry } = useAppState();
   const { schedule, archive, employees, settings } = state;
@@ -32,6 +102,7 @@ export default function StressTest() {
   const [expandedPersona, setExpandedPersona] = useState<string | null>(null);
   const [managerNote, setManagerNote] = useState("");
   const [overrideRecorded, setOverrideRecorded] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // Check if there are any rejections
   const hasRejection = currentResult?.personaResults.some((r) => r.verdict === "REJECT");
@@ -47,20 +118,44 @@ export default function StressTest() {
   const handleRunTest = useCallback(async () => {
     if (!schedule) return;
     setIsRunning(true);
+    setAiError(null);
 
-    // Simulate async delay for the "thinking" effect
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Fetch solar data from NASA POWER API for richer AI context
+      let solarData = null;
+      try {
+        const { start, end } = { start: schedule.weekStart, end: schedule.weekStart };
+        solarData = await fetchSolarData(
+          settings.station.lat,
+          settings.station.lon,
+          start,
+          new Date(new Date(end).getTime() + 6 * 86400000).toISOString().slice(0, 10),
+        );
+      } catch {
+        // Solar data is optional — continue without it
+      }
 
-    const result = runStressTest(employees, schedule);
-    setCurrentResult(result);
-    addStressTestResult(schedule, result);
-    setIsRunning(false);
+      const aiResult = await callStressTestAI({
+        employees,
+        schedule,
+        solarData,
+      });
 
-    // Show override modal if any REJECT
-    if (result.personaResults.some((r) => r.verdict === "REJECT")) {
-      setShowOverrideModal(true);
+      const result = buildResultFromAI(aiResult, { employees, schedule });
+      setCurrentResult(result);
+      addStressTestResult(schedule, result);
+
+      // Show override modal if any REJECT
+      if (result.personaResults.some((r) => r.verdict === "REJECT")) {
+        setShowOverrideModal(true);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Stress test failed. Please try again.";
+      setAiError(message);
+    } finally {
+      setIsRunning(false);
     }
-  }, [schedule, employees, addStressTestResult]);
+  }, [schedule, employees, settings.station, addStressTestResult]);
 
   // Employees implicated in non-approve findings (matched by name in the finding text)
   const involvedEmployeeIds = useMemo(() => {
@@ -114,7 +209,7 @@ export default function StressTest() {
               Generate a schedule first, then run the stress test
             </p>
             <p className="mt-2 text-xs text-text-muted">
-              The test evaluates your roster against 5 operational personas
+              The test evaluates your roster against 5 operational personas using live AI
             </p>
           </div>
         </div>
@@ -127,9 +222,10 @@ export default function StressTest() {
       {/* Live-wired config banner */}
       <div className="flex items-center gap-2 text-[10px] text-text-muted">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-fatigue-green" />
-        <span>Alert: {settings.thresholds.alertThreshold}% · Hard reject: {settings.thresholds.hardRejectThreshold}%</span>
+        <span>AI-Powered · {settings.thresholds.alertThreshold}% alert · {settings.thresholds.hardRejectThreshold}% hard reject</span>
         {!settings.thresholds.enforceILO48h && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">ILO 48h OFF</span>}
         {!settings.thresholds.enforce11hRest && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">11h Rest OFF</span>}
+        <span className="text-[9px] text-text-muted/50">AIML · meta-llama/llama-3.3-70b</span>
       </div>
 
       {/* Header */}
@@ -137,7 +233,7 @@ export default function StressTest() {
         <div>
           <h1 className="font-heading text-xl font-bold tracking-tight">Rollout Stress Test</h1>
           <p className="mt-1 text-xs uppercase tracking-[0.06em] text-text-muted">
-            Evaluate this week's roster against 5 operational personas
+            Evaluate this week's roster against 5 operational personas via live AI
           </p>
         </div>
         <button
@@ -148,7 +244,7 @@ export default function StressTest() {
           {isRunning ? (
             <span className="flex items-center gap-2">
               <span className="inline-block h-3 w-3 animate-spin rounded-full border border-text-muted border-t-transparent" />
-              Analysing...
+              Analysing via AIML API...
             </span>
           ) : (
             <span className="flex items-center gap-2">
@@ -161,11 +257,26 @@ export default function StressTest() {
         </button>
       </div>
 
+      {/* AI Error banner */}
+      {aiError && (
+        <div className="liquid-glass flex items-center gap-3 border-verd-reject/30 bg-verd-reject-bg p-4">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-verd-reject/20 text-verd-reject">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-verd-reject">AI Service Error</p>
+            <p className="text-xs text-text-secondary">{aiError}</p>
+          </div>
+        </div>
+      )}
+
       {/* Current result (or empty state) */}
-      {!currentResult && (
+      {!currentResult && !aiError && (
         <div className="liquid-glass p-8 text-center">
           <p className="text-sm text-text-muted">
-            Ready to test. Click "Run Stress Test" to evaluate this roster against all 5 personas.
+            Ready to test with live AI. Click "Run Stress Test" to evaluate this roster against all 5 personas via the AIML API.
           </p>
         </div>
       )}
@@ -193,6 +304,11 @@ export default function StressTest() {
                 }`}>
                   {currentResult.overallVerdict}
                 </p>
+                {currentResult.aiRaw && (
+                  <p className="text-[10px] text-text-muted">
+                    Risk Score: {currentResult.aiRaw.risk_score} · Violations: {currentResult.aiRaw.nadir_violations}
+                  </p>
+                )}
               </div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="text-xs text-verd-approve">{currentResult.summary.approved} Approved</span>
@@ -278,6 +394,11 @@ export default function StressTest() {
                     {r.overallVerdict}
                   </span>
                 </div>
+                {r.aiRaw && (
+                  <p className="text-[9px] text-text-muted mt-0.5">
+                    AIML · Risk: {r.aiRaw.risk_score} · Violations: {r.aiRaw.nadir_violations}
+                  </p>
+                )}
               </button>
             ))}
           </div>

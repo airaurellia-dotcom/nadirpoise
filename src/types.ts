@@ -93,6 +93,28 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
 };
 
+// ── AI Stress Test Types ──
+
+/** Raw response from the ai-stress-test Edge Function */
+export interface AIStressTestResponse {
+  status: "APPROVED" | "CAUTION" | "REJECT";
+  risk_score: number;
+  nadir_violations: number;
+  persona_feedback: AIStressTestPersonaFeedback[];
+}
+
+export interface AIStressTestPersonaFeedback {
+  persona: string;
+  finding: string;
+}
+
+/** Raw response from the ai-override-audit Edge Function */
+export interface AIOverrideAuditResponse {
+  is_valid: boolean;
+  compliance_summary: string;
+  cryptographic_receipt: string;
+}
+
 // ── Stress Test Types ──
 
 export type PersonaVerdict = "APPROVE" | "REJECT" | "CAUTION";
@@ -119,6 +141,8 @@ export interface StressTestResult {
     cautioned: number;
     rejected: number;
   };
+  /** AI audit data from the live AIML API call */
+  aiRaw?: AIStressTestResponse;
 }
 
 // ── Archive Types ──
@@ -130,6 +154,8 @@ export interface OverrideDetails {
   stressTestResult: StressTestResult;
   mitigations: string[];
   employeeIds: string[];
+  /** AI compliance audit result (from ai-override-audit Edge Function) */
+  aiAudit?: AIOverrideAuditResponse;
 }
 
 export interface ArchiveEntry {
@@ -173,7 +199,7 @@ export type AppAction =
   | { type: "ADD_ARCHIVE_ENTRY"; payload: ArchiveEntry }
   | { type: "CLEAR_ARCHIVE" }
   | { type: "ADD_STRESS_TEST_RESULT"; payload: { schedule: Schedule; result: StressTestResult } }
-  | { type: "ADD_OVERRIDE_ENTRY"; payload: { schedule: Schedule; result: StressTestResult; managerNote: string; employeeIds: string[] } }
+  | { type: "ADD_OVERRIDE_ENTRY"; payload: { schedule: Schedule; result: StressTestResult; managerNote: string; employeeIds: string[]; aiAudit?: AIOverrideAuditResponse } }
   | { type: "SET_PERSONA"; payload: Persona }
   | { type: "SET_USER"; payload: User }
   | { type: "CLEAR_USER" }

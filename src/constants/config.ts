@@ -8,6 +8,15 @@ export const NASA_POWER_ENDPOINT = "https://power.larc.nasa.gov/api/temporal/dai
 export const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1";
 export const SPEECHMATICS_SECRET_NAME = "SPEECHMATICS_API_KEY";
 
+// Supabase Edge Function URLs
+export const EDGE_FUNCTION_BASE = `${SUPABASE_URL}/functions/v1`;
+export const AI_STRESS_TEST_URL = `${EDGE_FUNCTION_BASE}/ai-stress-test`;
+export const AI_OVERRIDE_AUDIT_URL = `${EDGE_FUNCTION_BASE}/ai-override-audit`;
+
+// AIML API configuration
+export const AIML_API_BASE = "https://api.aimlapi.com/v1";
+export const AIML_MODEL = "meta-llama/llama-3.3-70b-instruct";
+
 // Demo credentials — pure facade, no real authentication
 import type { Persona } from "../types";
 

@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
-import type { AppState, AppAction, Schedule, ArchiveEntry, StressTestResult, Persona, User, AppSettings } from "../types";
+import type { AppState, AppAction, Schedule, ArchiveEntry, StressTestResult, Persona, User, AppSettings, AIOverrideAuditResponse } from "../types";
 import { DEFAULT_SETTINGS } from "../types";
 import { employees as mockEmployees } from "../data/employees";
 import { DEMO_CREDENTIALS } from "../constants/config";
@@ -64,6 +64,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
             .filter((r) => r.verdict === "REJECT" || r.verdict === "CAUTION")
             .flatMap((r) => r.findings.slice(0, 2)),
           employeeIds: action.payload.employeeIds,
+          aiAudit: action.payload.aiAudit,
         },
         label: `Override — ${new Date().toLocaleDateString()}`,
       };
@@ -103,7 +104,7 @@ interface AppContextValue {
   setCurrentSchedule: (schedule: Schedule) => void;
   addArchiveEntry: (entry: ArchiveEntry) => void;
   addStressTestResult: (schedule: Schedule, result: StressTestResult) => void;
-  addOverrideEntry: (schedule: Schedule, result: StressTestResult, managerNote: string, employeeIds: string[]) => void;
+  addOverrideEntry: (schedule: Schedule, result: StressTestResult, managerNote: string, employeeIds: string[], aiAudit?: AIOverrideAuditResponse) => void;
   setPersona: (persona: Persona) => void;
   login: (persona: Persona) => void;
   logout: () => void;
@@ -147,8 +148,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const addOverrideEntry = useCallback(
-    (schedule: Schedule, result: StressTestResult, managerNote: string, employeeIds: string[]) =>
-      dispatch({ type: "ADD_OVERRIDE_ENTRY", payload: { schedule, result, managerNote, employeeIds } }),
+    (schedule: Schedule, result: StressTestResult, managerNote: string, employeeIds: string[], aiAudit?: AIOverrideAuditResponse) =>
+      dispatch({ type: "ADD_OVERRIDE_ENTRY", payload: { schedule, result, managerNote, employeeIds, aiAudit } }),
     [],
   );
 
