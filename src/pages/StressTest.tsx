@@ -225,7 +225,7 @@ export default function StressTest() {
         <span>AI-Powered · {settings.thresholds.alertThreshold}% alert · {settings.thresholds.hardRejectThreshold}% hard reject</span>
         {!settings.thresholds.enforceILO48h && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">ILO 48h OFF</span>}
         {!settings.thresholds.enforce11hRest && <span className="stamp-badge border-fatigue-amber/40 text-fatigue-amber">11h Rest OFF</span>}
-        <span className="text-[9px] text-text-muted/50">AIML · mistralai/Mistral-7B-Instruct-v0.2</span>
+        <span className="text-[9px] text-text-muted/50">AIML · meta-llama/Llama-3.3-70B-Instruct-Turbo</span>
       </div>
 
       {/* Header */}
