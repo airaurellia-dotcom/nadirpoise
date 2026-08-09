@@ -97,15 +97,16 @@ export const DEFAULT_SETTINGS: AppSettings = {
 
 /** Raw response from the ai-stress-test Edge Function */
 export interface AIStressTestResponse {
-  overall_verdict: "APPROVE" | "REJECT";
+  overall_verdict: "APPROVED" | "REJECTED";
   overall_risk_score: number;
+  violations_count?: number;
   persona_evaluations: AIStressTestPersonaEvaluation[];
   recommendations: string[];
 }
 
 export interface AIStressTestPersonaEvaluation {
   persona_name: string;
-  verdict: "APPROVE" | "REJECT";
+  verdict: "APPROVED" | "CAUTION" | "REJECTED";
   metrics: string;
   argument: string;
 }
